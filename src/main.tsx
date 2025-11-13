@@ -6,6 +6,7 @@ import { DarkModeProvider } from './context/DarkModeContext.tsx'
 import { SidebarProvider } from './context/SidebarToggleContext.tsx'
 
 import { registerSW } from "virtual:pwa-register";
+import { DashboardProvider } from './context/DashboardContext.tsx'
 
 const updateSW = registerSW({
   onNeedRefresh() {
@@ -21,7 +22,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <DarkModeProvider>
       <SidebarProvider>
-        <App />
+        <DashboardProvider>
+          <App />
+        </DashboardProvider>
       </SidebarProvider>
     </DarkModeProvider>
   </StrictMode>
