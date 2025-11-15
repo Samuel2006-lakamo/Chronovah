@@ -104,7 +104,7 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
           const combined: ActivityItem[] = [
             ...(recentPeople ?? []).map(
               (p): ActivityItem => ({
-                id: String(p.id),
+                id: Number(p.id),
                 type: "people",
                 title: p.name ?? "Unknown",
                 createdAt: p.createdAt,
@@ -112,7 +112,7 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
             ),
             ...(recentPlaces ?? []).map(
               (p): ActivityItem => ({
-                id: String(p.id),
+                id: Number(p.id),
                 type: "places",
                 title: p.name ?? "Unknown",
                 createdAt: p.createdAt,
@@ -120,7 +120,7 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
             ),
             ...(recentNotes ?? []).map(
               (n): ActivityItem => ({
-                id: String(n.id),
+                id: Number(n.id),
                 type: "notes",
                 title: n.title ?? "Untitled",
                 createdAt: n.createdAt,
@@ -128,7 +128,7 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
             ),
             ...(recentJournals ?? []).map(
               (j): ActivityItem => ({
-                id: String(j.id),
+                id: Number(j.id),
                 type: "journals",
                 title: j.mood ?? "No mood",
                 createdAt: j.createdAt,

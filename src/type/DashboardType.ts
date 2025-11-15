@@ -1,7 +1,7 @@
 type ActivityType = "people" | "places" | "notes" | "journals";
 
 export type ActivityItem = {
-  id: string;
+  id: number;
   type: ActivityType;
   title: string;
   createdAt: string;

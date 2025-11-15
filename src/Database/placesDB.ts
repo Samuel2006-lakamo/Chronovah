@@ -15,7 +15,7 @@ const db = new Dexie("PlacesDatabase") as Dexie & {
   places: Table  <Place, number>;
 };
 
-db.version(2).stores({
+db.version(1).stores({
   places: "++id, name, country, location, type, createdAt",
 });
 
