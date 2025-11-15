@@ -20,7 +20,7 @@ function Section({
        </div>
      ) : (
        <p className="text-gray-500 dark:text-gray-400 text-sm italic">
-         No recent {title.toLowerCase()} found.
+         No {title.toLowerCase()} found.
        </p>
      )}
    </div>

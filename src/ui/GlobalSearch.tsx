@@ -105,10 +105,10 @@ const { query } = useSearch();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const openItem = (item: any) => {
-    if (item.type === "People") navigate(`/people/${item.id}`);
-    if (item.type === "Places") navigate(`/places/${item.id}`);
-    if (item.type === "Notes") navigate(`/notes/${item.id}`);
-    if (item.type === "Journals") navigate(`/journals/${item.id}`);
+    if (item.type === "People") navigate(`/item/people/${item.id}`);
+    if (item.type === "Places") navigate(`/item/places/${item.id}`);
+    if (item.type === "Notes") navigate(`/item/notes/${item.id}`);
+    if (item.type === "Journals") navigate(`/item/journals/${item.id}`);
     onClose();
   };
 

@@ -1,4 +1,4 @@
-import Dexie, { type Table } from "dexie";
+import Dexie, {  type Table } from "dexie";
 
 export interface Place {
   id?: string;
@@ -12,7 +12,7 @@ export interface Place {
 }
 
 const db = new Dexie("PlacesDatabase") as Dexie & {
-  places: Table<Place, number>;
+  places: Table  <Place, number>;
 };
 
 db.version(2).stores({
