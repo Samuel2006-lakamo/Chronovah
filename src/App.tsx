@@ -15,6 +15,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route index path="/" element={<Homepage />} />
         <Route element={<AppLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
 
@@ -25,7 +26,7 @@ function App() {
           <Route path="settings" element={<Setting />} />
           <Route path="item/:type/:id" element={<ItemDetails />} />
         </Route>
-        <Route path="/" element={<Homepage />} />
+
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
