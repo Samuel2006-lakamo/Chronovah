@@ -5,7 +5,7 @@ export default function CTASection() {
       <p className="opacity-90 mb-6">Your data deserves a safe home.</p>
 
       <button className="px-8 py-3 bg-white text-[#6C63FF] font-semibold rounded-lg shadow">
-        Create Account
+        Get Started
       </button>
     </section>
   );
