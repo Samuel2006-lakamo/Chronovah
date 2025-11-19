@@ -18,8 +18,8 @@ export default function Hero() {
         left: Math.random() * 100,
         top: Math.random() * 100,
         size: Math.random() * 8 + 4,
-        delay: Math.random() * 5,
-        duration: Math.random() * 10 + 10
+        delay: Math.random() * 10,
+        duration: Math.random() * 50 + 50
       }));
       setFloatingDots(dots)
   },[]
