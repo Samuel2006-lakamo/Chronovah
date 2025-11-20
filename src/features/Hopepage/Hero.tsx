@@ -43,7 +43,7 @@ export default function Hero() {
       id: i,
       left: Math.random() * 100,
       top: Math.random() * 100,
-      size: Math.random() * 8 + 4,
+      size: Math.random() * 6 + 2,
       delay: Math.random() * 10,
       duration: Math.random() * 50 + 50,
     }));
@@ -116,10 +116,10 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="min-h-screen bg-linear-to-r from-blue-100 via-pink-50 to-yellow-50 relative overflow-hidden flex justify-center items-center text-center px-4 py-20">
+    <section className="min-h-screen bg-linear-to-r from-teal-50 via-blue-100 to-yellow-50 relative overflow-hidden flex justify-center items-center text-center px-4 py-20 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="absolute -top-2 -left-5 w-36 h-4  rounded-2xl bg-blue-700"></div>
 
-      <header className="fixed rounded-full top-3 w-full px-4 py-3 max-w-3xl flex justify-between items-center z-30 shadow-md backdrop-blur-lg bg-white/50 backdrop-saturate-150 bg-linear-to-r from-blue-100 via-pink-50 to-yellow-50">
+      <header className="fixed rounded-full top-3 w-full px-4 py-3 max-w-3xl flex justify-between items-center z-30 shadow-md backdrop-blur-lg bg-white/50 backdrop-saturate-150 bg-linear-to-r from-teal-50 via-blue-100 to-yellow-50  dark:from-[#1E293B] dark:via-gray-800 dark:to-[#0B1120] ">
         <div className="flex items-center gap-2">
           <Box className="w-8 h-8 rounded-xl bg-blue-500 text-gray-800 dark:text-gray-100 tracking-wide" />
           <h1 className="font-bold text-lg text-gray-800 dark:text-gray-100 tracking-wide">
@@ -143,7 +143,7 @@ export default function Hero() {
       {floatingDots.map((dot) => (
         <div
           key={dot.id}
-          className="absolute rounded-full bg-blue-900 opacity-30 animate-float"
+          className="absolute rounded-full bg-blue-900 opacity-30 animate-float dark:opacity-70"
           style={{
             left: `${dot.left}%`,
             top: `${dot.top}%`,
@@ -155,41 +155,45 @@ export default function Hero() {
         />
       ))}
 
-      <div className="hero-content relative z-20 flex flex-col items-center justify-center w-full">
+      <div className="hero-content relative z-20 flex flex-col items-center justify-center w-full transition-colors duration-700">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.12, delay: 0.2 }}
-          className="text-3xl font-bold text-primary mb-3"
+          transition={{ duration: 1.12, delay: 1.2 }}
+          className="text-3xl font-bold text-primary mb-3 mt-10 md:text-5xl lg:text-6xl leading-tight text-gray-900 text-center dark:text-white/90 transition-colors duration-300"
         >
           <span>Keep Track of your </span>
           <br />
-          <span className="bg-gradient-to-r from-blue-700 via-pink-500 to-pink-300 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-blue-700 via-sky-500 to-teal-300 bg-clip-text text-transparent">
             Life Details
           </span>
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 1.2 }}
-          className="text-lg text-gray-900 opacity-80 mb-5"
+          initial={{ opacity: 0, y:-10, }}
+          animate={{ opacity: 1,y:0, }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="text-lg text-gray-900 dark:text-white/70 opacity-80 mb-5"
         >
-          Organize your Places, People & Notes — all in one simple dashboard.
+          Organize your Places, People, Notes & Journal — all in one simple
+          dashboard.
         </motion.p>
 
         <CTAButton />
 
         {/* Animated metrics row */}
-        <div
-          className="mt-6 w-full max-w-md mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-md backdrop-saturate-150 rounded-lg py-3 shadow-md"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.12, delay: 0.2 }}
+          className="mt-6 w-full max-w-md mx-auto bg-white/70 dark:bg-[#1E293B] backdrop-blur-md backdrop-saturate-150 relative rounded-lg py-3 shadow-lg"
           aria-live="polite"
           aria-label="Live metrics: total users and active users"
         >
-          <div className="flex justify-between relative">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full ">
+          <div className="flex justify-between">
+            <span className="inline-flex items-center gap-2 px-3 ">
               <div>
-                <span className="font-bold text-blue-700 text-[3rem] font-mono">
+                <span className="font-semibold text-blue-600 text-[3rem] dark:text-blue-600 font-mono  dark:shadow-[ 0 0 8px rgba(46, 227, 212, 0.8)]">
                   {animState.currentTotal.toLocaleString()}+
                 </span>
                 <div className="flex items-center gap-1 text-sm text-blue-600 font-medium">
@@ -203,14 +207,14 @@ export default function Hero() {
                   >
                     <path d="M7 11l5-5 5 5v7a2 2 0 01-2 2H9a2 2 0 01-2-2v-7z" />
                   </svg>
-                  <span className="text-lg"> users</span>
+                  <span className="text-lg dark:text-blue-400"> users</span>
                 </div>
               </div>
             </span>
-            <div className="w-2 h-full rounded-2xl bg-blue-800 absolute"></div>
+            <div className="w-2 h-full  top-0 rounded-2xl bg-blue-800 absolute dark:bg-blue-600"></div>
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full ">
               <div>
-                <span className="font-bold text-blue-700 text-[3rem] font-mono">
+                <span className="font-bold text-blue-600 text-[3rem] font-mono">
                   {animState.currentActive.toLocaleString()}+
                 </span>
                 <div className="flex items-center gap-1 text-sm text-green-600 font-medium">
@@ -224,12 +228,14 @@ export default function Hero() {
                   >
                     <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1 15l-5-5 1.5-1.5L11 13l6.5-6.5L19 8l-8 9z" />
                   </svg>
-                  <span className="text-lg">active today</span>
+                  <span className="text-lg dark:text-green-300">
+                    active today
+                  </span>
                 </div>
               </div>
             </span>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
