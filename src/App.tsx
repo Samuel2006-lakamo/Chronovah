@@ -15,26 +15,29 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgetPassword";
 import OtpVerification from "./pages/OTP";
 import ResetPassword from "./pages/ResetPassword";
+import ProtectedRoute from "./pages/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route index path="/" element={<Homepage />} />
-        <Route element={<AppLayout />}>
-          <Route path="dashboard" element={<Dashboard />} />
+        
+          <Route element={<ProtectedRoute><AppLayout/></ProtectedRoute>}>
+            <Route path="dashboard" element={<Dashboard />} />
 
-          <Route path="notes" element={<Note />} />
-          <Route path="journal" element={<Journal />} />
-          <Route path="places" element={<Places />} />
-          <Route path="people" element={<People />} />
-          <Route path="settings" element={<Setting />} />
-          <Route path="item/:type/:id" element={<ItemDetails />} />
-        </Route>
+            <Route path="notes" element={<Note />} />
+            <Route path="journal" element={<Journal />} />
+            <Route path="places" element={<Places />} />
+            <Route path="people" element={<People />} />
+            <Route path="settings" element={<Setting />} />
+            <Route path="item/:type/:id" element={<ItemDetails />} />
+          </Route>
+  
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot" element={<ForgotPassword />} />
-        <Route path="/otp" element={<OtpVerification />} />
+        <Route path="/otpverification" element={<OtpVerification />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>

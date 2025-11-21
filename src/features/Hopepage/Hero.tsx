@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import CTAButton from "../../ui/CTAButton";
 import { Box, Moon, Sun } from "lucide-react";
 import { useDarkMode } from "../../hooks/useDarkMode";
+import { NavLink } from "react-router-dom";
 
 interface DotProp {
   id: number;
@@ -123,10 +124,10 @@ export default function Hero() {
         <div className="flex items-center gap-2">
           <Box className="w-8 h-8 rounded-xl bg-blue-500 text-gray-800 dark:text-gray-100 tracking-wide" />
           <h1 className="font-bold text-lg text-gray-800 dark:text-gray-100 tracking-wide">
-            Chronova
+            Chronovah
           </h1>
         </div>
-        <div>
+        <div className="flex items-center justify-center">
           <button
             onClick={toggleDarkMode}
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-800 transition"
@@ -137,6 +138,12 @@ export default function Hero() {
               <Moon size={18} className="text-gray-600 dark:text-gray-300" />
             )}
           </button>
+          <NavLink
+            to="/dashboard"
+            className=" text-center px-2 bg-linear-to-r from-blue-500 to-teal-300 text-white  rounded-2xl dark:text-gray-900 ml-2 font-medium hover:from-blue-600 hover:to-teal-500 transition"
+          >
+            Start
+          </NavLink>
         </div>
       </header>
 
@@ -156,7 +163,6 @@ export default function Hero() {
       ))}
 
       <div className="hero-content relative z-20 flex flex-col items-center justify-center transition-colors duration-700">
-
         <div className="absolute inset-0 pointer-events-none z-0">
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 
@@ -224,7 +230,7 @@ export default function Hero() {
             <div className="w-2 h-full  top-0 rounded-2xl bg-blue-800 absolute dark:bg-blue-600"></div>
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full ">
               <div>
-                <span className="font-bold text-blue-600 text-[3rem] font-mono">
+                <span className="font-semibold text-blue-600 text-[3rem] dark:text-blue-600 font-mono  dark:shadow-[ 0 0 8px rgba(46, 227, 212, 0.8)]">
                   {animState.currentActive.toLocaleString()}+
                 </span>
                 <div className="flex items-center gap-1 text-sm text-green-600 font-medium">
@@ -238,9 +244,7 @@ export default function Hero() {
                   >
                     <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1 15l-5-5 1.5-1.5L11 13l6.5-6.5L19 8l-8 9z" />
                   </svg>
-                  <span className="text-lg dark:text-green-300">
-                    active today
-                  </span>
+                  <span className="text-lg dark:text-green-300 ">Active</span>
                 </div>
               </div>
             </span>

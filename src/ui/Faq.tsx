@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 type FaqItem = {
   question: string;
   answer: string;
@@ -40,16 +41,20 @@ export default function Faq() {
   };
 
   return (
-    <section className=" mx-auto py-12 px-4 dark:bg-[#060a13]">
+    <section className=" mx-auto py-12 px-4 dark:bg-gray-900 bg-gray-50 ">
       <h2 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">
         Frequently Asked Questions
       </h2>
 
       <div className="space-y-4">
         {faqs.map((item, i) => (
-          <div
+          <motion.div
             key={i}
-            className="rounded-xl border border-gray-200 bg-white dark:bg-[#0B1120] hover:dark:bg-[#111a30] dark:border-gray-950 shadow-sm"
+            initial={{ opacity: 0, x: -20,y:20 }}
+            whileInView={{ opacity: 1, x: 0 ,y:0  }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.4, delay: i * 0.1 }}
+            className="rounded-xl border border-gray-200 bg-white dark:bg-gray-800 hover:dark:bg-gray-800 dark:border-gray-800 shadow-sm"
           >
             <button
               className="w-full flex justify-between items-center p-4 text-left"
@@ -78,7 +83,7 @@ export default function Faq() {
                 {item.answer}
               </div>
             )}
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>

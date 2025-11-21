@@ -10,7 +10,7 @@ const items = [
 
 export default function SecuritySection() {
   return (
-    <section className="py-20 px-6 bg-teal-50 dark:bg-gray-900">
+    <section className="py-20 px-6 bg-gray-50 dark:bg-gray-900">
       <h2 className="text-3xl font-bold text-center mb-6 dark:text-white text-gray-900">
         Your Data, Fully Secured
       </h2>

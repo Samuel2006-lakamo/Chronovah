@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Mail, ArrowLeft } from "lucide-react";
 import { validateEmail } from "../hooks/useValidation";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [touched, setTouched] = useState(false);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const emailError = touched ? validateEmail(email) : "";
 
@@ -25,6 +26,7 @@ export default function ForgotPassword() {
 
     setLoading(false);
     setSent(true);
+    navigate("/otpverification");
   };
 
   return (
@@ -47,12 +49,12 @@ export default function ForgotPassword() {
               Reset Password
             </h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              We’ll send you a recovery link
+              A recover code will be sent to your email
             </p>
           </div>
         </div>
 
-        {!sent ? (
+        {!sent && (
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
@@ -96,30 +98,10 @@ export default function ForgotPassword() {
                   : "bg-blue-600 hover:bg-blue-700"
               } text-white`}
             >
-              {loading ? "Sending..." : "Send reset link"}
+              {loading ? "Sending..." : "Send code"}
             </button>
           </form>
-        ) : (
-          <div className="text-center space-y-4">
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              A password reset link has been sent to:
-            </p>
-            <p className="font-semibold text-gray-900 dark:text-gray-100">
-              {email}
-            </p>
-
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              If you don’t receive it in a few minutes, check your spam folder.
-            </p>
-
-            <Link
-              to="/signin"
-              className="inline-block mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold"
-            >
-              Return to Sign In
-            </Link>
-          </div>
-        )}
+        ) }
 
         {/* Back link */}
         <div className="mt-6">
