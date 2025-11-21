@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 export default function OtpVerification() {
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [error, setError] = useState("");
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(30);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function OtpVerification() {
   };
 
   const resend = () => {
-    setTimer(60);
+    setTimer(30);
     setOtp(Array(6).fill(""));
   };
 
@@ -61,7 +61,7 @@ export default function OtpVerification() {
             <input
               key={index}
               maxLength={1}
-              ref={(el) => (inputsRef.current[index] = el)}
+              ref={(el) => { inputsRef.current[index] = el; }}
               value={digit}
               onChange={(e) => handleChange(e.target.value, index)}
               className="w-12 h-12 text-center rounded-xl border border-gray-300 dark:border-[#14202b] bg-gray-50 dark:bg-[#071620] text-lg font-semibold text-gray-900 dark:text-gray-100 outline-none"
