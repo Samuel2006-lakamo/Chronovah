@@ -44,7 +44,8 @@ export default function SignUp() {
     try {
       await signUp(name.trim(), email.trim(), password);
       navigate("/dashboard");
-    } catch (err: string | any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       setFormError(err?.message || "Failed to create account. Try again.");
     }
   };

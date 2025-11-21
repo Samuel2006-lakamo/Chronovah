@@ -30,6 +30,7 @@ export default function SignIn() {
     try {
       await signIn(email.trim(), remember);
       navigate("/dashboard"); // change route to your app route
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: string | any) {
       setFormError(err?.message || "Failed to sign in. Try again.");
     }
