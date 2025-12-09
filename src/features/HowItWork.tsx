@@ -20,7 +20,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="px-6 md:px-12 py-16 bg-white dark:bg-[#060a13] relative">
+    <section className="px-6 md:px-12 py-16 bg-white dark:bg-[#0B1120] relative">
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800 dark:text-shadow-gray-100 dark:text-gray-100">
         How It Works
       </h2>

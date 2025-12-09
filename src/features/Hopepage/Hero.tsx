@@ -162,15 +162,15 @@ export default function Hero() {
         />
       ))}
 
-      <div className="hero-content relative z-20 flex flex-col items-center justify-center transition-colors duration-700">
-        <div className="absolute inset-0 pointer-events-none z-0">
+      <div className="hero-content relative  flex flex-col items-center justify-center transition-colors duration-700">
+        {/* <div className="absolute inset-0 pointer-events-none z-0">
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 
       w-[400px] h-[450px] rounded-full 
     bg-[radial-gradient(circle,rgba(0,90,255,0.55)_0%,rgba(80,0,255,0.25)_40%,rgba(5,10,30,0)_70%)]
       blur-[120px] opacity-70 bg-no-repeat"
           ></div>
-        </div>
+        </div> */}
 
         <motion.h1
           initial={{ opacity: 0, y: -20 }}

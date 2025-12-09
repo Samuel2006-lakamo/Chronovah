@@ -52,7 +52,7 @@ export default function Features() {
   return (
     <section
       id="features"
-      className="px-6 md:px-12 py-16 bg-gray-50 dark:bg-[#0B1120] relative"
+      className="px-6 md:px-12 py-16 bg-gray-50 dark:bg-gray-900 relative outline-0 border-0 "
     >
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 dark:text-white text-gray-900">
         What Cronova Helps You Manage
@@ -63,16 +63,17 @@ export default function Features() {
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 30 }}
-            
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{duration: 0.72, delay: i * 0.3 }}
+            transition={{ duration: 0.72, delay: i * 0.3 }}
             className="bg-white dark:bg-black/20 text-gray-900 flex flex-col items-center border-white/10 backdrop-blur-sm rounded-xl text-center  p-6 dark:shadow-gray-900 hover:shadow-lg transition "
           >
             <div className="text-4xl mb-4 bg-white dark:bg-gray-950 w-[100px] h-[100px] text-center flex items-center justify-center p-4 rounded-2xl shadow-lg">
               {f.icon}
             </div>
-            <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">{f.title}</h3>
+            <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">
+              {f.title}
+            </h3>
             <p className="text-gray-700 dark:text-gray-300">{f.desc}</p>
           </motion.div>
         ))}

@@ -50,7 +50,7 @@ export default function UserFeedback() {
   }, [isPaused,controls]);
 
   return (
-    <section className="w-full py-20 dark:bg-[#060a13] dark:text-white text-gray-800 overflow-hidden">
+    <section className="w-full py-20 dark:bg-[#0B1120] dark:text-white text-gray-800 overflow-hidden">
       <h2 className="text-3xl font-bold text-center mb-10 ">
         What Our Users Say
       </h2>
