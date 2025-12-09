@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import CTAButton from "../../ui/CTAButton";
 
 
-export default function CTAComponent() {
+export default function  CTAComponent() {
 
 
   return (

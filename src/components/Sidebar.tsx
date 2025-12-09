@@ -28,7 +28,7 @@ function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-4 px-5 py-3 rounded-lg mx-3 my-1 text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-800 ${
                 isActive
-                  ? "bg-blue-500 text-white dark:bg-blue-600"
+                  ? "bg-blue-500 text-white hover:bg-blue-500  dark:bg-blue-600"
                   : "text-gray-600"
               }`
             }

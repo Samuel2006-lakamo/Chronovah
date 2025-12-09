@@ -24,7 +24,7 @@ export default function SecuritySection() {
             key={i}
             initial={{ opacity: 0,x:30 }}
             whileInView={{ opacity: 1,x:0}}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{duration: 0.4, delay: i * 0.1 }}
             className="bg-white p-5 rounded-xl shadow text-center dark:bg-gray-800 dark:text-gray-200 text-gray-900 font-medium hover:shadow-lg transition "
           >

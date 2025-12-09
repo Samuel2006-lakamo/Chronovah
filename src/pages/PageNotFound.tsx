@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import NotFoundIllustration from "../assets/notfound.svg"; 
+// import NotFoundIllustration from "../assets/notfound.svg"; 
 
 export default function PageNotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
 
       <motion.img
-        src={NotFoundIllustration}
+        // src={NotFoundIllustration}
         alt="Not Found Illustration"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

@@ -13,7 +13,7 @@ function Homepage() {
   return (
     <>
       <Hero />
-      {/* <AboutSection /> */}
+
       <Features />
       <HowItWorks />
 

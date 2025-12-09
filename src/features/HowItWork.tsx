@@ -31,7 +31,7 @@ export default function HowItWorks() {
             key={s.number}
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6, delay: i * 0.1 }}
             className="flex  transition  gap-6 items-start p-6  rounded-xl bg-gray-50 dark:bg-[#0B1120] hover:dark:bg-[#111a30] "
           >

@@ -52,7 +52,7 @@ export default function Faq() {
             key={i}
             initial={{ opacity: 0, x: -20,y:20 }}
             whileInView={{ opacity: 1, x: 0 ,y:0  }}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{ duration: 0.4, delay: i * 0.1 }}
             className="rounded-xl border border-gray-200 bg-white dark:bg-gray-800 hover:dark:bg-gray-800 dark:border-gray-800 shadow-sm"
           >

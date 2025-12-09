@@ -65,7 +65,7 @@ export default function Features() {
             initial={{ opacity: 0, y: 30 }}
             
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{duration: 0.72, delay: i * 0.3 }}
             className="bg-white dark:bg-black/20 text-gray-900 flex flex-col items-center border-white/10 backdrop-blur-sm rounded-xl text-center  p-6 dark:shadow-gray-900 hover:shadow-lg transition "
           >
