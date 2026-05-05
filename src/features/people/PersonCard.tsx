@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import type { Person } from "../../type/PeopleType";
+import { formatRelativeDateShort } from "../../utils/formatDate";
 
 interface PersonCardProps {
   person: Person;
@@ -174,8 +175,13 @@ export default function PersonCard({
 
         {/* Action buttons — mirrors PlaceCard footer */}
         <div className="flex items-center justify-between pt-2 border-t border-default">
-          {/* Social links */}
           <div className="flex items-center gap-2">
+            {/* Added date */}
+            {person.createdAt && (
+              <span className="text-xs text-muted">
+                {formatRelativeDateShort(person.createdAt)}
+              </span>
+            )}
             {hasSocialMedia && (
               <>
                 {person.socialMedia?.twitter && (

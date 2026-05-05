@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import type { Place } from "../../type/PlaceType";
+import { formatRelativeDateShort } from "../../utils/formatDate";
 
 interface PlaceCardProps {
   place: Place;
@@ -159,6 +160,12 @@ export default function PlaceCard({ place, onEdit, onDelete, onClick, onUpdate }
         {/* Action buttons */}
         <div className="flex items-center justify-between pt-2 border-t border-default">
           <div className="flex items-center gap-2">
+            {/* Added date */}
+            {place.createdAt && (
+              <span className="text-xs text-muted">
+                {formatRelativeDateShort(place.createdAt)}
+              </span>
+            )}
             {place.website && (
               <a
                 href={place.website}
