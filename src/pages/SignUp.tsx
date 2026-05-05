@@ -74,22 +74,24 @@ export default function SignUp() {
 
     let score = 0;
     if (password.length >= 8) score++;
+    if (/[a-z]/.test(password)) score++;
     if (/[A-Z]/.test(password)) score++;
     if (/[0-9]/.test(password)) score++;
     if (/[^A-Za-z0-9]/.test(password)) score++;
 
-    const strengthMap = {
+    const strengthMap: Record<number, { message: string; color: string }> = {
       0: { message: "Very weak", color: "bg-red-500" },
-      1: { message: "Weak", color: "bg-orange-500" },
-      2: { message: "Fair", color: "bg-yellow-500" },
-      3: { message: "Good", color: "bg-blue-500" },
-      4: { message: "Strong", color: "bg-green-500" },
+      1: { message: "Weak", color: "bg-red-500" },
+      2: { message: "Fair", color: "bg-orange-500" },
+      3: { message: "Good", color: "bg-yellow-500" },
+      4: { message: "Strong", color: "bg-blue-500" },
+      5: { message: "Very strong", color: "bg-green-500" },
     };
 
     setPasswordStrength({
       score,
-      message: strengthMap[score as keyof typeof strengthMap].message,
-      color: strengthMap[score as keyof typeof strengthMap].color,
+      message: strengthMap[score].message,
+      color: strengthMap[score].color,
     });
   }, [password]);
 
@@ -332,7 +334,7 @@ export default function SignUp() {
               {password && (
                 <div className="mt-2 space-y-1">
                   <div className="flex gap-1 h-1">
-                    {[1, 2, 3, 4].map((level) => (
+                    {[1, 2, 3, 4, 5].map((level) => (
                       <div
                         key={level}
                         className={`flex-1 h-full rounded-full transition-colors ${
@@ -343,10 +345,19 @@ export default function SignUp() {
                       />
                     ))}
                   </div>
-                  <p
-                    className={`text-xs ${passwordStrength.color.replace("bg-", "text-")}`}
-                  >
+                  <p className={`text-xs ${passwordStrength.color.replace("bg-", "text-")}`}>
                     {passwordStrength.message}
+                    {passwordStrength.score < 5 && (
+                      <span className="text-muted ml-1">
+                        — needs: {[
+                          !/[a-z]/.test(password) && "lowercase",
+                          !/[A-Z]/.test(password) && "uppercase",
+                          !/[0-9]/.test(password) && "number",
+                          !/[^A-Za-z0-9]/.test(password) && "special char",
+                          password.length < 8 && "8+ chars",
+                        ].filter(Boolean).join(", ")}
+                      </span>
+                    )}
                   </p>
                 </div>
               )}
