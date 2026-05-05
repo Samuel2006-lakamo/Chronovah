@@ -1,7 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
-import BottomNav from "../components/BottomNav";
 import ThemeQuickSwitcher from "../components/ThemeQuickSwitcher";
 import { useSidebar } from "../hooks/useSidebar";
 
