@@ -1,24 +1,23 @@
 // pages/SignIn.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Mail,
   Lock,
   Eye,
   EyeOff,
-
   ArrowRight,
-
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { validateEmail, validateSignInPassword } from "../hooks/useValidation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { GoogleAuthButton } from "../features/Authentication/Oauth";
 import Spinner from "../ui/Spinner";
 import { authService, type SignInCredentials } from "../services/auth.service";
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState<boolean>(false);
@@ -31,8 +30,13 @@ export default function SignIn() {
 
   const { refresh } = useAuth();
 
-  // Demo credentials for quick testing
-  // const demoCredentials = {
+  // Handle OAuth error redirect from backend
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error === "oauth_failed") {
+      setFormError("Google sign-in failed. Please try again or use email and password.");
+    }
+  }, [searchParams]);
   //   email: "demo@chronovah.com",
   //   password: "Demo123!",
   // };
@@ -159,7 +163,9 @@ export default function SignIn() {
           <div className="space-y-3">
             <GoogleAuthButton
               onClick={() => {
-                const apiUrl = import.meta.env.VITE_API_URL || "https://api-chronovah-backend.onrender.com/api/v1";
+                const apiUrl = import.meta.env.DEV
+                  ? "http://localhost:8000/api/v1"
+                  : (import.meta.env.VITE_API_URL || "https://api-chronovah-backend.onrender.com/api/v1");
                 window.location.href = `${apiUrl}/oauth/google`;
               }}
               label="Continue with Google"

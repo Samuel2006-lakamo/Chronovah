@@ -35,7 +35,7 @@ const FAQS: FaqItem[] = [
   },
   {
     q: "Can I cancel my Pro subscription?",
-    a: "Yes, cancel anytime with no penalties. You retain Pro access until the end of your billing period. We offer a 7-day refund on first purchases.",
+    a: "Yes, cancel anytime with no penalties. You retain Pro access until the end of your billing period.",
   },
   {
     q: "Is payment secure?",

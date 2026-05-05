@@ -3,13 +3,10 @@ import axios, { AxiosError } from "axios";
 
 const isDevelopment = import.meta.env.DEV;
 
-// API URL - uses environment variable or falls back to production URL
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://api-chronovah-backend.onrender.com/api/v1";
-
-// Log the API URL being used (helps with debugging)
-console.log("🌐 API URL:", API_URL);
+// In dev use localhost, in production use the hosted backend
+const API_URL = isDevelopment
+  ? "http://localhost:8000/api/v1"
+  : (import.meta.env.VITE_API_URL || "https://api-chronovah-backend.onrender.com/api/v1");
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -148,7 +145,7 @@ axiosInstance.interceptors.request.use(
 publicAxios.interceptors.request.use(
   (config) => {
     if (isDevelopment) {
-      console.log(`🌐 ${config.method?.toUpperCase()} ${config.url}`);
+      console.log(`${config.method?.toUpperCase()} ${config.url}`);
     }
 
     return config;
@@ -158,7 +155,7 @@ publicAxios.interceptors.request.use(
 
 axiosInstance.interceptors.response.use((response) => {
   if (isDevelopment) {
-    console.log(`✅ Response [${response.status}]`, response.data);
+    console.log(` Response [${response.status}]`, response.data);
   }
 
   return response;
@@ -166,7 +163,7 @@ axiosInstance.interceptors.response.use((response) => {
 
 protectedAxios.interceptors.response.use((response) => {
   if (isDevelopment) {
-    console.log(`✅ Protected Response [${response.status}]`);
+    console.log(` Protected Response [${response.status}]`);
   }
 
   return response;
@@ -175,7 +172,7 @@ protectedAxios.interceptors.response.use((response) => {
 publicAxios.interceptors.response.use(
   (response) => {
     if (isDevelopment) {
-      console.log(`✅ Public Response [${response.status}]`);
+      console.log(` Public Response [${response.status}]`);
     }
 
     return response;

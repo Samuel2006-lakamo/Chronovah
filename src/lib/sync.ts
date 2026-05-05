@@ -8,6 +8,12 @@ import type { Place } from '../type/PlaceType';
 import { newId } from './helpers';
 
 export type SyncStatus = 'syncing' | 'synced' | 'offline' | 'error';
+export type SyncTable = 'notes' | 'journal' | 'people' | 'places';
+
+// In dev use localhost, in production use the hosted backend
+const API_BASE = import.meta.env.DEV
+  ? 'http://localhost:8000/api/v1'
+  : (import.meta.env.VITE_API_URL || 'https://api-chronovah-backend.onrender.com/api/v1');
 
 class SyncManager {
   private isOnline = navigator.onLine;
@@ -15,11 +21,17 @@ class SyncManager {
   private lastError = false;
   private lastSyncedAt: Date | null = null;
 
+  // SSE
+  private sseSource: EventSource | null = null;
+  private sseUserId: string | null = null;
+  private sseReconnectTimer: ReturnType<typeof setTimeout> | null = null;
+
   constructor() {
-    // Listen for online/offline events
     window.addEventListener('online', () => {
       this.isOnline = true;
       this.processSyncQueue();
+      // Reconnect SSE when coming back online
+      if (this.sseUserId) this.connectSSE(this.sseUserId);
     });
 
     window.addEventListener('offline', () => {
@@ -27,7 +39,115 @@ class SyncManager {
     });
   }
 
-  // Queue an operation for sync
+  // ─── SSE ────────────────────────────────────────────────────────────────────
+
+  /**
+   * Open an SSE connection for the given user.
+   * When the server broadcasts a sync event, we re-pull only the affected table.
+   */
+  connectSSE(userId: string): void {
+    // Don't open duplicate connections
+    if (this.sseSource && this.sseUserId === userId) return;
+
+    this.disconnectSSE();
+    this.sseUserId = userId;
+
+    // SSE needs credentials (cookie) — use the full URL with withCredentials
+    const url = `${API_BASE}/sse`;
+    const source = new EventSource(url, { withCredentials: true });
+    this.sseSource = source;
+
+    source.addEventListener('connected', () => {
+      console.log('[SSE] Connected');
+      if (this.sseReconnectTimer) {
+        clearTimeout(this.sseReconnectTimer);
+        this.sseReconnectTimer = null;
+      }
+    });
+
+    source.addEventListener('sync', (e: MessageEvent) => {
+      try {
+        const { table } = JSON.parse(e.data) as { table: SyncTable; ts: number };
+        console.log(`[SSE] Sync event for table: ${table}`);
+        this.pullTable(userId, table);
+      } catch (_) {}
+    });
+
+    source.onerror = () => {
+      console.warn('[SSE] Connection lost — reconnecting in 5s');
+      source.close();
+      this.sseSource = null;
+      // Exponential back-off reconnect
+      this.sseReconnectTimer = setTimeout(() => {
+        if (this.sseUserId) this.connectSSE(this.sseUserId);
+      }, 5000);
+    };
+  }
+
+  disconnectSSE(): void {
+    if (this.sseReconnectTimer) {
+      clearTimeout(this.sseReconnectTimer);
+      this.sseReconnectTimer = null;
+    }
+    if (this.sseSource) {
+      this.sseSource.close();
+      this.sseSource = null;
+    }
+    this.sseUserId = null;
+  }
+
+  // ─── Pull a single table from server into Dexie ─────────────────────────────
+
+  async pullTable(userId: string, table: SyncTable): Promise<void> {
+    if (!this.isOnline) return;
+    try {
+      switch (table) {
+        case 'notes': {
+          const { data } = await protectedAxios.get<Note[]>('/notes');
+          await db.notes.where('userId').equals(userId).delete();
+          if (data?.length) await db.notes.bulkAdd(data);
+          break;
+        }
+        case 'journal': {
+          const { data } = await protectedAxios.get<JournalEntry[]>('/journal');
+          await db.journal.where('userId').equals(userId).delete();
+          if (data?.length) await db.journal.bulkAdd(data);
+          break;
+        }
+        case 'people': {
+          const { data } = await protectedAxios.get<Person[]>('/people');
+          await db.people.where('userId').equals(userId).delete();
+          if (data?.length) await db.people.bulkAdd(data);
+          break;
+        }
+        case 'places': {
+          const { data } = await protectedAxios.get<Place[]>('/places');
+          await db.places.where('userId').equals(userId).delete();
+          if (data?.length) await db.places.bulkAdd(data);
+          break;
+        }
+      }
+    } catch (err) {
+      console.warn(`[Sync] Failed to pull ${table}:`, err);
+    }
+  }
+
+  // ─── Initial full pull on login ──────────────────────────────────────────────
+
+  async pullUserData(userId: string): Promise<void> {
+    if (!this.isOnline) return;
+    await Promise.allSettled([
+      this.pullTable(userId, 'notes'),
+      this.pullTable(userId, 'journal'),
+      this.pullTable(userId, 'people'),
+      this.pullTable(userId, 'places'),
+    ]);
+    // Open SSE after initial pull so we get live updates going forward
+    this.connectSSE(userId);
+  }
+
+  // ─── Outbound sync queue ─────────────────────────────────────────────────────
+
   async queueOperation(
     userId: string,
     table: SyncOperation['table'],
@@ -48,16 +168,13 @@ class SyncManager {
 
     await db.syncQueue.add(syncOp);
 
-    // Try to sync immediately if online
     if (this.isOnline && !this.syncInProgress) {
       this.processSyncQueue();
     }
   }
 
-  // Process the sync queue
   private async processSyncQueue(): Promise<void> {
     if (this.syncInProgress || !this.isOnline) return;
-
     this.syncInProgress = true;
 
     try {
@@ -69,130 +186,51 @@ class SyncManager {
           await db.syncQueue.delete(op.id!);
           this.lastError = false;
         } catch (error) {
-          console.warn('Sync operation failed, will retry:', op, error);
+          console.warn('[Sync] Operation failed, will retry:', op, error);
           this.lastError = true;
-          // Increment retry count
           await db.syncQueue.update(op.id!, { retryCount: op.retryCount + 1 });
-          // If too many retries, remove it
           if (op.retryCount >= 5) {
             await db.syncQueue.delete(op.id!);
           }
         }
       }
 
-      if (!this.lastError) {
-        this.lastSyncedAt = new Date();
-      }
+      if (!this.lastError) this.lastSyncedAt = new Date();
     } catch (error) {
-      console.error('Sync queue processing failed:', error);
+      console.error('[Sync] Queue processing failed:', error);
     } finally {
       this.syncInProgress = false;
     }
   }
 
-  // Sync a single operation
   private async syncOperation(op: SyncOperation): Promise<void> {
     const endpoint = `/${op.table}`;
 
-    try {
-      switch (op.operation) {
-        case 'create':
-          await protectedAxios.post(endpoint, op.data);
-          break;
-        case 'update':
-          await protectedAxios.put(`${endpoint}/${op.recordId}`, op.data);
-          break;
-        case 'delete':
-          await protectedAxios.delete(`${endpoint}/${op.recordId}`);
-          break;
-      }
-    } catch (error: any) {
-      // Handle PRO_REQUIRED errors
-      if (error.response?.status === 403) {
-        try {
-          const data = await error.response.data;
-          if (data.code === 'PRO_REQUIRED') {
-            // Trigger upgrade flow
-            this.handleProRequired();
-            throw error; // Still fail the sync
-          }
-        } catch (e) {
-          // If we can't parse, just re-throw
-          throw error;
-        }
-      }
-      throw error;
+    switch (op.operation) {
+      case 'create':
+        await protectedAxios.post(endpoint, op.data);
+        break;
+      case 'update':
+        await protectedAxios.put(`${endpoint}/${op.recordId}`, op.data);
+        break;
+      case 'delete':
+        await protectedAxios.delete(`${endpoint}/${op.recordId}`);
+        break;
     }
   }
 
-  private handleProRequired(): void {
-    // Emit custom event that components can listen to
-    const event = new CustomEvent('pro-required', {
-      detail: { 
-        message: 'This feature requires a Pro subscription',
-        upgradeUrl: '/upgrade'
-      }
-    });
-    window.dispatchEvent(event);
-  }
+  // ─── Logout cleanup ──────────────────────────────────────────────────────────
 
-  // Pull all user data from server on login
-  async pullUserData(userId: string): Promise<void> {
-    if (!this.isOnline) return;
-
-    try {
-      // Pull notes
-      try {
-        const notesResponse = await protectedAxios.get('/notes');
-        const serverNotes: Note[] = notesResponse.data;
-        await db.notes.where('userId').equals(userId).delete(); // Clear local
-        await db.notes.bulkAdd(serverNotes);
-      } catch (error) {
-        console.log('Failed to pull notes (backend not ready):', error);
-      }
-
-      // Pull journal
-      try {
-        const journalResponse = await protectedAxios.get('/journal');
-        const serverEntries: JournalEntry[] = journalResponse.data;
-        await db.journal.where('userId').equals(userId).delete();
-        await db.journal.bulkAdd(serverEntries);
-      } catch (error) {
-        console.log('Failed to pull journal (backend not ready):', error);
-      }
-
-      // Pull people
-      try {
-        const peopleResponse = await protectedAxios.get('/people');
-        const serverPeople: Person[] = peopleResponse.data;
-        await db.people.where('userId').equals(userId).delete();
-        await db.people.bulkAdd(serverPeople);
-      } catch (error) {
-        console.log('Failed to pull people (backend not ready):', error);
-      }
-
-      // Pull places
-      try {
-        const placesResponse = await protectedAxios.get('/places');
-        const serverPlaces: Place[] = placesResponse.data;
-        await db.places.where('userId').equals(userId).delete();
-        await db.places.bulkAdd(serverPlaces);
-      } catch (error) {
-        console.log('Failed to pull places (backend not ready):', error);
-      }
-    } catch (error) {
-      console.error('Failed to pull user data:', error);
-    }
-  }
-
-  // Clear all user data on logout
   async clearUserData(userId: string): Promise<void> {
+    this.disconnectSSE();
     await db.notes.where('userId').equals(userId).delete();
     await db.journal.where('userId').equals(userId).delete();
     await db.people.where('userId').equals(userId).delete();
     await db.places.where('userId').equals(userId).delete();
     await db.syncQueue.where('userId').equals(userId).delete();
   }
+
+  // ─── Status ──────────────────────────────────────────────────────────────────
 
   getStatus(): SyncStatus {
     if (!this.isOnline) return 'offline';

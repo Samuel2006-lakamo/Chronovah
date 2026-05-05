@@ -78,7 +78,7 @@ export default function AboutPage() {
   return (
     <>
       <Header />
-      <main className="pt-20">
+      <main className="">
 
         {/* ── Hero ── */}
         <section className="relative overflow-hidden border-b border-default bg-default py-24 md:py-32">

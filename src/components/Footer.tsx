@@ -100,7 +100,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-default pt-8 sm:flex-row">
           <p className="text-xs text-muted">
-            Built with an offline-first architecture using Dexie.js and React.
+            Built with an offline-first architecture.
           </p>
           <p className="text-xs font-medium text-muted">
             <span className="text-primary">No refunds</span> — all payments are final.

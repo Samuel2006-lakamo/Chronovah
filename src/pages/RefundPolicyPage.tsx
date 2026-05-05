@@ -53,7 +53,7 @@ export default function RefundPolicyPage() {
   return (
     <>
       <Header />
-      <main className="pt-20">
+      <main className="">
 
         {/* Header */}
         <section className="border-b border-default bg-default py-16 md:py-20">

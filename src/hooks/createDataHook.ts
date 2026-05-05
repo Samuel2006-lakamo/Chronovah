@@ -41,9 +41,11 @@ export function createDataHook<T extends BaseRecord>(
       [user?.id]
     );
 
-    // Show skeleton while: auth is loading OR sync hasn't completed yet OR
-    // Dexie hasn't resolved its first query (items still undefined after sync)
-    const isLoading = !synced || items === undefined;
+    // isLoading is true only while the initial server sync hasn't completed
+    // AND Dexie hasn't resolved its first query yet.
+    // Once synced=true (set immediately from cache on refresh, or after
+    // first pull on login), pages render from Dexie without any skeleton.
+    const isLoading = !synced && items === undefined;
 
     /**
      * Create a new record

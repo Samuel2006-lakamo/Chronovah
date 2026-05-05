@@ -51,6 +51,24 @@ export const useUser = (): UseUserReturn => {
   const [synced, setSynced] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // On mount, check if Dexie already has data from a previous session.
+  // If so, mark synced=true immediately so pages render from cache
+  // without showing skeletons while the background refresh runs.
+  useEffect(() => {
+    (async () => {
+      try {
+        const profiles = await db.userProfile.toArray();
+        if (profiles.length > 0) {
+          // We have cached data — pages can render immediately
+          setUser(profiles[0] as User);
+          setSynced(true);
+        }
+      } catch (_) {
+        // Dexie not ready yet — fetchUserFromBackend will handle it
+      }
+    })();
+  }, []);
+
   const fetchUserFromBackend = useCallback(async () => {
     setLoading(true);
     setError(null);

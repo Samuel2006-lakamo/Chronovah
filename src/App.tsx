@@ -7,6 +7,7 @@ import PlaceDetail from "./features/Places/PlaceDetail";
 import JournalDetail from "./features/Journal/JournalDetail";
 import PersonDetail from "./features/people/PersonDetail";
 import PlanGuard from "./components/subscription/PlanGuard";
+import Spinner from "./ui/Spinner";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Note = lazy(() => import("./pages/Note"));
 const NoteDetail = lazy(() => import("./features/Note/NoteDetail"));
@@ -22,6 +23,7 @@ const SignUp = lazy(() => import("./pages/SignUp"));
 const ForgotPassword = lazy(() => import("./pages/ForgetPassword"));
 const OtpVerification = lazy(() => import("./pages/OTP"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const OAuthCallback = lazy(() => import("./pages/OAuthCallback"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const UpgradePage = lazy(() => import("./pages/UpgradePage"));
@@ -37,7 +39,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Suspense fallback={null}>
+      <Suspense fallback={<Spinner/>}>
         <Routes>
           <Route index path="/" element={<Homepage />} />
           <Route path="pricing" element={<PricingPage />} />
@@ -119,6 +121,7 @@ function App() {
           <Route path="/forgot" element={<ForgotPassword />} />
           <Route path="/otpverification" element={<OtpVerification />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/oauth/callback" element={<OAuthCallback />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Suspense>

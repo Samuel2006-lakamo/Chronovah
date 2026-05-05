@@ -67,7 +67,7 @@ export default function ContactPage() {
   return (
     <>
       <Header />
-      <main className="pt-20">
+      <main className="">
 
         {/* ── Hero ── */}
         <section className="border-b border-default bg-default py-16 md:py-20">

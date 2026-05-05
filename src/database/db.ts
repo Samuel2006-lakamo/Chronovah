@@ -27,6 +27,22 @@ export interface UserProfile {
   updatedAt: string;
 }
 
+const DB_NAME = "ChronovahDB";
+const DB_VERSION = 5; // bump this whenever schema changes
+
+function buildSchema(dexie: Dexie) {
+  // Single source of truth for the schema.
+  // All versions below 5 are legacy — we only define the current shape.
+  dexie.version(DB_VERSION).stores({
+    notes:       "id, userId, title, isPinned, isFavorite, color, createdAt, updatedAt, *tags",
+    journal:     "id, userId, mood, isFavorite, createdAt, updatedAt, *tags",
+    people:      "id, userId, name, relation, birthday, email, company, isFavorite, createdAt, updatedAt, *tags",
+    places:      "id, userId, name, country, type, visitedDate, isFavorite, createdAt, updatedAt, *tags",
+    syncQueue:   "id, userId, table, operation, recordId, createdAt, retryCount",
+    userProfile: "id, email, updatedAt",
+  });
+}
+
 class ChronovahDB extends Dexie {
   notes!: Table<Note, string>;
   journal!: Table<JournalEntry, string>;
@@ -36,48 +52,76 @@ class ChronovahDB extends Dexie {
   userProfile!: Table<UserProfile, string>;
 
   constructor() {
-    super("ChronovahDB");
-
-    // v1 — original schema
-    this.version(1).stores({
-      notes:    "id, userId, title, isPinned, isFavorite, color, createdAt, updatedAt, *tags",
-      journal:  "id, userId, mood, isFavorite, createdAt, updatedAt, *tags",
-      people:   "id, userId, name, relation, birthday, email, company, isFavorite, createdAt, updatedAt, *tags",
-      places:   "id, userId, name, country, type, visitedDate, isFavorite, createdAt, updatedAt, *tags",
-      syncQueue:"id, userId, table, operation, recordId, createdAt, retryCount",
-    });
-
-    // v2 — added userProfile table
-    this.version(2).stores({
-      notes:    "id, userId, title, isPinned, isFavorite, color, createdAt, updatedAt, *tags",
-      journal:  "id, userId, mood, isFavorite, createdAt, updatedAt, *tags",
-      people:   "id, userId, name, relation, birthday, email, company, isFavorite, createdAt, updatedAt, *tags",
-      places:   "id, userId, name, country, type, visitedDate, isFavorite, createdAt, updatedAt, *tags",
-      syncQueue:"id, userId, table, operation, recordId, createdAt, retryCount",
-      userProfile: "id, email, updatedAt",
-    });
-
-    // v3 — same schema, forces upgrade on clients with broken v2/v3 state
-    // Drops and recreates all stores to fix any primary key corruption
-    this.version(4).stores({
-      notes:    "id, userId, title, isPinned, isFavorite, color, createdAt, updatedAt, *tags",
-      journal:  "id, userId, mood, isFavorite, createdAt, updatedAt, *tags",
-      people:   "id, userId, name, relation, birthday, email, company, isFavorite, createdAt, updatedAt, *tags",
-      places:   "id, userId, name, country, type, visitedDate, isFavorite, createdAt, updatedAt, *tags",
-      syncQueue:"id, userId, table, operation, recordId, createdAt, retryCount",
-      userProfile: "id, email, updatedAt",
-    }).upgrade(async (tx) => {
-      // Clear all data on upgrade — it will be re-synced from the server
-      await tx.table("notes").clear();
-      await tx.table("journal").clear();
-      await tx.table("people").clear();
-      await tx.table("places").clear();
-      await tx.table("syncQueue").clear();
-      // userProfile may not exist yet on some clients — ignore errors
-      try { await tx.table("userProfile").clear(); } catch (_) {}
-    });
+    super(DB_NAME);
+    buildSchema(this);
   }
 }
 
-export const db = new ChronovahDB();
+/**
+ * Open the database. If it fails due to a schema/upgrade error
+ * (e.g. primary key change from a previous broken migration),
+ * delete the entire database and open a fresh copy.
+ * Data will be re-synced from the server on next login.
+ */
+async function openDatabase(): Promise<ChronovahDB> {
+  const instance = new ChronovahDB();
+  try {
+    await instance.open();
+    return instance;
+  } catch (err: any) {
+    const isUpgradeError =
+      err?.name === "UpgradeError" ||
+      err?.name === "DatabaseClosedError" ||
+      err?.inner?.name === "UpgradeError" ||
+      String(err?.message).includes("primary key") ||
+      String(err?.message).includes("UpgradeError");
+
+    if (isUpgradeError) {
+      console.warn(
+        "[DB] Schema upgrade failed — deleting and recreating database.",
+        err
+      );
+      try {
+        await instance.delete();
+      } catch (_) {
+        // If delete also fails, try the native API
+        await new Promise<void>((resolve) => {
+          const req = indexedDB.deleteDatabase(DB_NAME);
+          req.onsuccess = () => resolve();
+          req.onerror = () => resolve(); // resolve anyway
+          req.onblocked = () => resolve();
+        });
+      }
+      // Return a fresh instance
+      const fresh = new ChronovahDB();
+      await fresh.open();
+      return fresh;
+    }
+
+    throw err;
+  }
+}
+
+// Export a promise that resolves to the ready database.
+// All consumers import `db` — it's a proxy that waits for the promise.
+let _db: ChronovahDB | null = null;
+const _dbReady = openDatabase().then((instance) => {
+  _db = instance;
+  return instance;
+});
+
+// Proxy so existing code (`db.notes.where(...)`) keeps working unchanged.
+export const db = new Proxy({} as ChronovahDB, {
+  get(_target, prop) {
+    if (_db) {
+      // Database is ready — return directly (fast path, no overhead)
+      return (_db as any)[prop];
+    }
+    // Database still opening — return a function that waits
+    return (...args: any[]) =>
+      _dbReady.then((instance) => (instance as any)[prop](...args));
+  },
+});
+
+export { _dbReady as dbReady };
 export default db;
