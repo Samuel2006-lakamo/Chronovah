@@ -30,10 +30,10 @@ function AppLayout() {
         </div>
       </main>
 
-      {/* Mobile bottom nav */}
+      {/* Mobile bottom nav
       <div className="md:hidden fixed bottom-0 left-0 w-full">
         <BottomNav />
-      </div>
+      </div> */}
 
       {/* Theme Quick Switcher */}
       <ThemeQuickSwitcher />
