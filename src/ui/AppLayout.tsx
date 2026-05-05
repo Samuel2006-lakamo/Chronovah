@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ThemeQuickSwitcher from "../components/ThemeQuickSwitcher";
 import { useSidebar } from "../hooks/useSidebar";
+import BottomNav from "../components/BottomNav";
 
 function AppLayout() {
   const { isOpen } = useSidebar();
@@ -28,11 +29,11 @@ function AppLayout() {
           <Outlet />
         </div>
       </main>
-
-      {/* Mobile bottom nav
+{/* 
+       Mobile bottom nav */}
       <div className="md:hidden fixed bottom-0 left-0 w-full">
         <BottomNav />
-      </div> */}
+      </div> 
 
       {/* Theme Quick Switcher */}
       <ThemeQuickSwitcher />

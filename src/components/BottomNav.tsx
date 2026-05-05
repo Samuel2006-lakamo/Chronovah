@@ -42,15 +42,7 @@ function BottomNav() {
               </motion.div>
 
               {/* Label - always visible on mobile, tooltip on desktop */}
-              <span
-                className={`
-                text-[10px] font-medium mt-1 transition-colors duration-200
-                ${isActive ? "text-primary-500" : "text-muted"}
-                md:hidden
-              `}
-              >
-                {name}
-              </span>
+            
 
               {/* Desktop tooltip */}
               <span
