@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { JournalEntry } from "../../type/JournalType";
 import { stripMarkdownForPreview } from "../../utils/textPreview";
+import { formatRelativeDateShort } from "../../utils/formatDate";
 
 const moods: Record<string, { emoji: string; color: string; bgColor: string }> =
   {
@@ -41,28 +42,10 @@ export default function JournalCard({
 }: JournalCardProps) {
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await onUpdate(entry.id!, {
-      isFavorite: !entry.isFavorite,
-    });
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
+    await onUpdate(entry.id!, { isFavorite: !entry.isFavorite });
   };
 
   const mood = moods[entry.mood] || moods.Neutral;
-
   const preview = stripMarkdownForPreview(entry.note, 100);
 
   return (
@@ -83,7 +66,7 @@ export default function JournalCard({
               {mood.emoji}
             </span>
             <span className="text-xs sm:text-sm text-muted bg-default px-2 py-1 rounded-full">
-              {formatDate(entry.createdAt)}
+              {formatRelativeDateShort(entry.createdAt)}
             </span>
           </div>
 

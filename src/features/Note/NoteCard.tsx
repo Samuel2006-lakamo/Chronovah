@@ -11,6 +11,7 @@ import {
 
 import type { Note } from "../../type/NoteType";
 import { stripMarkdownForPreview } from "../../utils/textPreview";
+import { formatRelativeDate } from "../../utils/formatDate";
 
 interface NoteCardProps {
   note: Note;
@@ -22,36 +23,12 @@ interface NoteCardProps {
 export default function NoteCard({ note, viewMode, onClick, onUpdate }: NoteCardProps) {
   const togglePinned = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await onUpdate(note.id!, {
-      isPinned: !note.isPinned,
-    });
+    await onUpdate(note.id!, { isPinned: !note.isPinned });
   };
 
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await onUpdate(note.id!, {
-      isFavorite: !note.isFavorite,
-    });
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) {
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
-      return `Today at ${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-    }
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays} days ago`;
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    await onUpdate(note.id!, { isFavorite: !note.isFavorite });
   };
 
   const preview = stripMarkdownForPreview(note.content, 120);
@@ -112,7 +89,7 @@ export default function NoteCard({ note, viewMode, onClick, onUpdate }: NoteCard
           <div className="flex items-center gap-3 text-xs text-muted">
             <div className="flex items-center gap-1">
               <Clock size={10} />
-              <span>{formatDate(note.updatedAt)}</span>
+              <span>{formatRelativeDate(note.updatedAt)}</span>
             </div>
 
             <div className="flex items-center gap-1">
@@ -243,7 +220,7 @@ export default function NoteCard({ note, viewMode, onClick, onUpdate }: NoteCard
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
             <Clock size={10} />
-            <span>{formatDate(note.updatedAt)}</span>
+            <span>{formatRelativeDate(note.updatedAt)}</span>
           </div>
 
           {note.wordCount && (
