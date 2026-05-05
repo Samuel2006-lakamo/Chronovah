@@ -117,20 +117,18 @@ class AuthService {
   }
 
   private handleError(error: any): Error {
-    if (error.response) {
-      // Server responded with error
-      const message =
-        error.response.data?.error ||
-        error.response.data?.message ||
-        "An error occurred";
-      return new Error(message);
-    } else if (error.request) {
-      // Request made but no response
-      return new Error("Network error. Please check your connection.");
-    } else {
-      // Something else happened
-      return new Error(error.message || "An unexpected error occurred");
-    }
+    // The axios interceptor already transforms errors into { message, status, ... }
+    // so error.message is always the correct user-facing string.
+    // We just re-throw it as an Error so catch blocks get err.message.
+    const message =
+      error?.message ||
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "An unexpected error occurred";
+    const err = new Error(message);
+    // Preserve extra fields (code, status, upgradeUrl) for callers that need them
+    Object.assign(err, error);
+    return err;
   }
 }
 
