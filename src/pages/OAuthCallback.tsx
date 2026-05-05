@@ -25,11 +25,11 @@ export default function OAuthCallback() {
     localStorage.setItem("accessToken", token);
 
     // Refresh auth context then go to dashboard
-    refresh().then(() => {
+    // refresh() returns void — just call it and navigate after a short delay
+    refresh();
+    setTimeout(() => {
       navigate("/dashboard", { replace: true });
-    }).catch(() => {
-      navigate("/signin?error=oauth_failed", { replace: true });
-    });
+    }, 300);
   }, [searchParams, navigate, refresh]);
 
   return (
