@@ -12,9 +12,14 @@ import {
   Users,
   MapPin,
   ShieldCheck,
+  CreditCard,
+  Info,
 } from "lucide-react";
 import { protectedAxios } from "../../axios";
 import { useAuth } from "../hooks/useAuth";
+import { useCurrency } from "../hooks/useCurrency";
+import CurrencySelector from "../components/CurrencySelector";
+import { useSubscriptionStore } from "../store/subscriptionStore";
 
 const FEATURES = [
   "Unlimited journal entries",
@@ -40,6 +45,8 @@ const fadeUp = (delay = 0) => ({
 export default function UpgradePage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { fetchStatus } = useSubscriptionStore();
+  const { currency, setCurrency, detecting } = useCurrency();
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,30 +67,84 @@ export default function UpgradePage() {
 
   if (!user) return null;
 
-  const fmt = (n: number) =>
-    new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      maximumFractionDigits: 0,
-    }).format(n);
-
-  const amount = billingPeriod === "yearly" ? 25000 : 2500;
-  const amountFormatted = fmt(amount);
+  const price = billingPeriod === "yearly" ? currency.yearlyDisplay : currency.monthlyDisplay;
 
   const handleUpgrade = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await protectedAxios.post("/subscription/initialize", { billingPeriod });
-      if (response.data.authorizationUrl) {
-        window.location.href = response.data.authorizationUrl;
-      } else {
+      const response = await protectedAxios.post("/subscription/initialize", {
+        billingPeriod,
+        currency: currency.code,
+      });
+
+      const { email, amount, publicKey, reference, metadata, authorizationUrl } = response.data;
+
+      if (!publicKey || !reference) {
         setError("Failed to initialize payment. Please try again.");
+        setIsLoading(false);
+        return;
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+      // If Paystack inline script hasn't loaded yet, wait up to 3s then fall back
+      if (!window.PaystackPop) {
+        let waited = 0;
+        await new Promise<void>((resolve) => {
+          const check = setInterval(() => {
+            waited += 100;
+            if (window.PaystackPop || waited >= 3000) {
+              clearInterval(check);
+              resolve();
+            }
+          }, 100);
+        });
+      }
+
+      if (!window.PaystackPop) {
+        if (authorizationUrl) {
+          window.location.href = authorizationUrl;
+        } else {
+          setError("Payment popup unavailable. Please try again.");
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      // Correct Paystack inline API: PaystackPop.setup({...}).openIframe()
+      // NOTE: callback must be a plain function — Paystack rejects async functions
+      const handler = window.PaystackPop.setup({
+        key: publicKey,
+        email: email || user.email,
+        amount,
+        currency: currency.code,
+        ref: reference,
+        metadata,
+        channels: currency.cardOnly
+          ? ["card"]
+          : ["card", "bank", "ussd", "qr", "mobile_money", "bank_transfer"],
+        callback: function(response) {
+          // Plain function — kick off async work inside without making callback itself async
+          setIsLoading(true);
+          protectedAxios
+            .post("/subscription/verify", { reference: response.reference })
+            .then(() => fetchStatus())
+            .then(() => {
+              navigate("/payment/success?reference=" + response.reference);
+            })
+            .catch((err: any) => {
+              setError(err?.message || "Payment verification failed. Please contact support.");
+              setIsLoading(false);
+            });
+        },
+        onClose: function() {
+          setIsLoading(false);
+        },
+      });
+
+      handler.openIframe();
+      setIsLoading(false);
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to initialize payment. Please try again.");
-    } finally {
+      setError(err?.message || "Failed to initialize payment. Please try again.");
       setIsLoading(false);
     }
   };
@@ -100,9 +161,12 @@ export default function UpgradePage() {
             <ArrowLeft size={15} />
             Back to pricing
           </button>
-          <div className="flex items-center gap-2 text-xs text-muted">
-            <Lock size={12} className="text-primary-500" />
-            Secured by Paystack
+          <div className="flex items-center gap-4">
+            <CurrencySelector value={currency.code} onChange={setCurrency} />
+            <div className="flex items-center gap-2 text-xs text-muted">
+              <Lock size={12} className="text-primary-500" />
+              Secured by Paystack
+            </div>
           </div>
         </div>
       </div>
@@ -140,28 +204,45 @@ export default function UpgradePage() {
               {/* Account info */}
               <div className="mb-6 space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-muted">
-                    Name
-                  </label>
-                  <div className="rounded-xl border border-default bg-default px-4 py-3 text-sm text-muted">
-                    {user.name}
-                  </div>
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-muted">Name</label>
+                  <div className="rounded-xl border border-default bg-default px-4 py-3 text-sm text-muted">{user.name}</div>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-muted">
-                    Email
-                  </label>
-                  <div className="rounded-xl border border-default bg-default px-4 py-3 text-sm text-muted">
-                    {user.email}
-                  </div>
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-muted">Email</label>
+                  <div className="rounded-xl border border-default bg-default px-4 py-3 text-sm text-muted">{user.email}</div>
                 </div>
               </div>
 
+              {/* Currency selector */}
+              <div className="mb-6">
+                <label className="mb-3 block text-xs font-semibold uppercase tracking-widest text-muted">Currency</label>
+                {detecting ? (
+                  <div className="flex items-center gap-2 text-sm text-muted">
+                    <Loader size={14} className="animate-spin" />
+                    Detecting your currency…
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {(["NGN", "USD", "GBP", "EUR"] as const).map((code) => (
+                      <button
+                        key={code}
+                        onClick={() => setCurrency(code)}
+                        className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all ${
+                          currency.code === code
+                            ? "border-primary-500/70 bg-primary-500/10 text-primary"
+                            : "border-default bg-default text-muted hover:border-primary-500/30"
+                        }`}
+                      >
+                        {code}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Billing period */}
-              <div className="mb-8">
-                <label className="mb-3 block text-xs font-semibold uppercase tracking-widest text-muted">
-                  Billing period
-                </label>
+              <div className="mb-6">
+                <label className="mb-3 block text-xs font-semibold uppercase tracking-widest text-muted">Billing period</label>
                 <div className="grid grid-cols-2 gap-3">
                   {(["monthly", "yearly"] as const).map((p) => (
                     <button
@@ -180,17 +261,34 @@ export default function UpgradePage() {
                       )}
                       <p className="text-sm font-semibold text-primary capitalize">{p}</p>
                       <p className="mt-0.5 text-sm text-muted">
-                        {p === "yearly" ? "₦25,000 / year" : "₦2,500 / month"}
+                        {p === "yearly" ? currency.yearlyDisplay + " / year" : currency.monthlyDisplay + " / month"}
                       </p>
                     </button>
                   ))}
                 </div>
               </div>
 
+              {/* Payment method note */}
+              <div className="mb-6 flex items-start gap-2.5 rounded-xl border border-default bg-default p-4">
+                <CreditCard size={15} className="mt-0.5 shrink-0 text-primary-500" />
+                <div>
+                  <p className="text-xs font-semibold text-primary">
+                    {currency.cardOnly
+                      ? "Card payment only"
+                      : "Card, bank transfer, and USSD available"}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted">
+                    {currency.cardOnly
+                      ? "International payments are processed by card only via Paystack."
+                      : "NGN payments support all Paystack channels including bank transfer and USSD."}
+                  </p>
+                </div>
+              </div>
+
               {/* Pay button */}
               <button
                 onClick={handleUpgrade}
-                disabled={isLoading}
+                disabled={isLoading || detecting}
                 className="group flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 py-4 text-sm font-semibold text-white shadow-medium transition-all hover:bg-primary-700 hover:shadow-glow disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
@@ -200,21 +298,21 @@ export default function UpgradePage() {
                   </>
                 ) : (
                   <>
-                    Pay {amountFormatted} with Paystack
+                    Pay {price} with Paystack
                     <ArrowRight size={15} strokeWidth={2.5} className="transition-transform group-hover:translate-x-0.5" />
                   </>
                 )}
               </button>
 
               <p className="mt-4 text-center text-xs text-muted">
-                You will be redirected to Paystack to complete payment securely.
+                A secure Paystack popup will open to complete your payment.
               </p>
 
               {/* No-refund notice */}
               <div className="mt-5 rounded-xl border border-default bg-default p-4">
                 <p className="text-xs leading-relaxed text-muted">
                   <span className="font-semibold text-primary">No refunds.</span>{" "}
-                  All payments are final. You may cancel at any time to stop future charges — Pro access continues until the end of your billing period. Please review your selection before paying.
+                  All payments are final. You may cancel at any time to stop future charges — Pro access continues until the end of your billing period.
                 </p>
               </div>
             </div>
@@ -227,15 +325,10 @@ export default function UpgradePage() {
 
               {/* What's unlocked */}
               <div className="mb-6">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
-                  Sections unlocked
-                </p>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">Sections unlocked</p>
                 <div className="space-y-2.5">
                   {UNLOCKED.map(({ icon: Icon, label, bg, color }) => (
-                    <div
-                      key={label}
-                      className={`flex items-center gap-3 rounded-xl border border-default ${bg} px-4 py-3`}
-                    >
+                    <div key={label} className={`flex items-center gap-3 rounded-xl border border-default ${bg} px-4 py-3`}>
                       <Icon size={18} className={`shrink-0 ${color}`} strokeWidth={1.75} />
                       <span className="text-sm font-semibold text-primary">{label}</span>
                       <span className="ml-auto text-xs text-muted">Unlimited</span>
@@ -246,9 +339,7 @@ export default function UpgradePage() {
 
               {/* Features */}
               <div className="mb-6 border-t border-default pt-6">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
-                  Includes
-                </p>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">Includes</p>
                 <ul className="space-y-2.5">
                   {FEATURES.map((f) => (
                     <li key={f} className="flex items-center gap-2.5 text-sm text-muted">
@@ -265,7 +356,7 @@ export default function UpgradePage() {
                   <span className="text-sm text-muted">
                     Chronovah Pro · {billingPeriod === "yearly" ? "Yearly" : "Monthly"}
                   </span>
-                  <span className="text-base font-bold text-primary">{amountFormatted}</span>
+                  <span className="text-base font-bold text-primary">{price}</span>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-xs text-muted">Billed</span>
@@ -273,14 +364,26 @@ export default function UpgradePage() {
                     {billingPeriod === "yearly" ? "Once per year" : "Every month"}
                   </span>
                 </div>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-xs text-muted">Currency</span>
+                  <span className="text-xs font-medium text-primary">{currency.code}</span>
+                </div>
               </div>
+
+              {/* International note */}
+              {currency.cardOnly && (
+                <div className="mt-4 flex items-start gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/5 px-4 py-3">
+                  <Info size={14} className="mt-0.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
+                  <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                    International payments are card-only. Bank transfer and USSD are available for NGN.
+                  </p>
+                </div>
+              )}
 
               {/* Trust */}
               <div className="mt-6 flex items-center gap-2 rounded-xl border border-default bg-default px-4 py-3">
                 <ShieldCheck size={15} className="shrink-0 text-primary-500" />
-                <p className="text-xs text-muted">
-                  Secured by Paystack · PCI-DSS compliant
-                </p>
+                <p className="text-xs text-muted">Secured by Paystack · PCI-DSS compliant</p>
               </div>
             </div>
           </motion.div>
