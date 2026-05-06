@@ -62,7 +62,7 @@ export default function ImageUpload({
       } catch (err) {
         const msg = err instanceof Error ? err.message : "Failed to upload image";
         setUploadError(msg);
-        console.error("ImageUpload: failed to upload to Cloudinary", err);
+        console.error("ImageUpload: failed to upload image", err);
       }
     }
   };
@@ -164,7 +164,7 @@ export default function ImageUpload({
                 )}
               </div>
               {isUploading ? (
-                <p className="text-sm text-muted">Uploading to Cloudinary…</p>
+                <p className="text-sm text-muted">Uploading image…</p>
               ) : (
                 <>
                   <p className="text-sm text-primary mb-1">
