@@ -71,7 +71,10 @@ export default function OtpVerification() {
     setLoading(true);
 
     try {
-      await protectedAxios.put("/user/verify-email", { verificationCode: code });
+      const response = await protectedAxios.put("/user/verify-email", { verificationCode: code });
+      // Store token for Safari (cross-origin cookie blocked by ITP)
+      const token = response.data?.data?.accessToken || response.data?.accessToken;
+      if (token) localStorage.setItem("accessToken", token);
       setVerified(true);
       await refresh();
       setTimeout(() => navigate("/dashboard"), 1500);

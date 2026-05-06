@@ -131,9 +131,14 @@ axiosInstance.interceptors.request.use(
   (config) => {
     if (isDevelopment) {
       console.log(`🚀 ${config.method?.toUpperCase()} ${config.url}`);
-
       if (config.data) console.log("📦 Request Data:", config.data);
       if (config.params) console.log("🔍 Params:", config.params);
+    }
+
+    // Attach token as Bearer header — fallback for Safari which blocks cross-origin cookies
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
@@ -168,6 +173,18 @@ protectedAxios.interceptors.response.use((response) => {
 
   return response;
 }, responseInterceptor);
+
+// Attach token as Bearer header on protectedAxios too
+protectedAxios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
 publicAxios.interceptors.response.use(
   (response) => {
