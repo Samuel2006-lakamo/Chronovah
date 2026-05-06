@@ -17,6 +17,8 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import { useSubscriptionStore } from "../store/subscriptionStore";
 import { useLiveQuery } from "dexie-react-hooks";
+import { useCurrency } from "../hooks/useCurrency";
+import CurrencySelector from "../components/CurrencySelector";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import db from "../database/db";
@@ -66,6 +68,7 @@ export default function PricingPage() {
   const { user } = useAuth();
   const { isProActive } = useSubscriptionStore();
   const [yearly, setYearly] = useState(false);
+  const { currency, setCurrency } = useCurrency();
 
   const journalCount = useLiveQuery(
     async () => (user ? db.journal.where("userId").equals(user.id).count() : 0),
@@ -80,14 +83,7 @@ export default function PricingPage() {
     [user?.id]
   ) ?? 0;
 
-  const fmt = (n: number) =>
-    new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      maximumFractionDigits: 0,
-    }).format(n);
-
-  const price = yearly ? fmt(25000) : fmt(2500);
+  const price = yearly ? currency.yearlyDisplay : currency.monthlyDisplay;
   const period = yearly ? "/ year" : "/ month";
 
   const handleUpgrade = () => {
@@ -161,28 +157,31 @@ export default function PricingPage() {
             </motion.p>
 
             {/* Billing toggle */}
-            <motion.div {...fadeUp(0.2)} className="mt-10 inline-flex items-center gap-1 rounded-xl border border-default bg-card p-1">
-              <button
-                onClick={() => setYearly(false)}
-                className={`rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors ${
-                  !yearly ? "bg-default text-primary shadow-soft" : "text-muted hover:text-primary"
-                }`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setYearly(true)}
-                className={`relative rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors ${
-                  yearly ? "bg-default text-primary shadow-soft" : "text-muted hover:text-primary"
-                }`}
-              >
-                Yearly
-                {yearly && (
-                  <span className="absolute -top-2.5 -right-2 rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
-                    −17%
-                  </span>
-                )}
-              </button>
+            <motion.div {...fadeUp(0.2)} className="mt-10 flex flex-col items-center gap-4">
+              <div className="inline-flex items-center gap-1 rounded-xl border border-default bg-card p-1">
+                <button
+                  onClick={() => setYearly(false)}
+                  className={`rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors ${
+                    !yearly ? "bg-default text-primary shadow-soft" : "text-muted hover:text-primary"
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setYearly(true)}
+                  className={`relative rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors ${
+                    yearly ? "bg-default text-primary shadow-soft" : "text-muted hover:text-primary"
+                  }`}
+                >
+                  Yearly
+                  {yearly && (
+                    <span className="absolute -top-2.5 -right-2 rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                      −17%
+                    </span>
+                  )}
+                </button>
+              </div>
+              <CurrencySelector value={currency.code} onChange={setCurrency} />
             </motion.div>
           </div>
         </section>

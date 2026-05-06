@@ -3,6 +3,8 @@ import { motion, useInView } from "framer-motion";
 import { Check, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSubscriptionStore } from "../../store/subscriptionStore";
+import { useCurrency } from "../../hooks/useCurrency";
+import CurrencySelector from "../../components/CurrencySelector";
 
 const FREE_FEATURES = [
   "Unlimited notes",
@@ -28,11 +30,9 @@ export default function PricingSection() {
   const navigate = useNavigate();
   const { isProActive } = useSubscriptionStore();
   const [yearly, setYearly] = useState(false);
+  const { currency, setCurrency } = useCurrency();
 
-  const fmt = (n: number) =>
-    new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
-
-  const price = yearly ? fmt(25000) : fmt(2500);
+  const price = yearly ? currency.yearlyDisplay : currency.monthlyDisplay;
   const period = yearly ? "/ year" : "/ month";
   const saving = yearly ? "Save 17%" : null;
 
@@ -64,28 +64,31 @@ export default function PricingSection() {
           </p>
 
           {/* Toggle */}
-          <div className="mt-8 inline-flex items-center gap-1 rounded-xl border border-default bg-default p-1">
-            <button
-              onClick={() => setYearly(false)}
-              className={`rounded-lg px-5 py-2 text-sm font-medium transition-colors ${
-                !yearly ? "bg-card text-primary shadow-soft" : "text-muted hover:text-primary"
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setYearly(true)}
-              className={`relative rounded-lg px-5 py-2 text-sm font-medium transition-colors ${
-                yearly ? "bg-card text-primary shadow-soft" : "text-muted hover:text-primary"
-              }`}
-            >
-              Yearly
-              {saving && (
-                <span className="absolute -top-2.5 -right-2 rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
-                  {saving}
-                </span>
-              )}
-            </button>
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <div className="inline-flex items-center gap-1 rounded-xl border border-default bg-default p-1">
+              <button
+                onClick={() => setYearly(false)}
+                className={`rounded-lg px-5 py-2 text-sm font-medium transition-colors ${
+                  !yearly ? "bg-card text-primary shadow-soft" : "text-muted hover:text-primary"
+                }`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setYearly(true)}
+                className={`relative rounded-lg px-5 py-2 text-sm font-medium transition-colors ${
+                  yearly ? "bg-card text-primary shadow-soft" : "text-muted hover:text-primary"
+                }`}
+              >
+                Yearly
+                {saving && (
+                  <span className="absolute -top-2.5 -right-2 rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    {saving}
+                  </span>
+                )}
+              </button>
+            </div>
+            <CurrencySelector value={currency.code} onChange={setCurrency} />
           </div>
         </motion.div>
 
