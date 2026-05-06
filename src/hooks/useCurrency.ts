@@ -6,16 +6,15 @@
 import { useState, useEffect } from "react";
 import { publicAxios } from "../../axios";
 
-export type CurrencyCode = "NGN" | "USD" | "GBP" | "EUR";
+export type CurrencyCode = "NGN" | "USD";
 
 export interface CurrencyConfig {
   code: CurrencyCode;
   symbol: string;
-  monthly: number;       // price in major units (e.g. 2500, 2.99)
+  monthly: number;
   yearly: number;
-  monthlyDisplay: string; // formatted string e.g. "₦2,500"
+  monthlyDisplay: string;
   yearlyDisplay: string;
-  // NGN supports all Paystack channels; others are card-only
   cardOnly: boolean;
 }
 
@@ -38,24 +37,6 @@ const CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
     yearlyDisplay: "$29.99",
     cardOnly: true,
   },
-  GBP: {
-    code: "GBP",
-    symbol: "£",
-    monthly: 2.49,
-    yearly: 24.99,
-    monthlyDisplay: "£2.49",
-    yearlyDisplay: "£24.99",
-    cardOnly: true,
-  },
-  EUR: {
-    code: "EUR",
-    symbol: "€",
-    monthly: 2.79,
-    yearly: 27.99,
-    monthlyDisplay: "€2.79",
-    yearlyDisplay: "€27.99",
-    cardOnly: true,
-  },
 };
 
 const STORAGE_KEY = "chronovah_currency";
@@ -66,12 +47,15 @@ export function useCurrency() {
 
   useEffect(() => {
     // 1. Check localStorage first — user preference always wins
+    // Sanitize: if stored value is no longer valid (e.g. GBP/EUR from old session), clear it
     const stored = localStorage.getItem(STORAGE_KEY) as CurrencyCode | null;
     if (stored && CURRENCIES[stored]) {
       setCurrencyState(CURRENCIES[stored]);
       setDetecting(false);
       return;
     }
+    // Clear invalid stored value
+    if (stored) localStorage.removeItem(STORAGE_KEY);
 
     // 2. Auto-detect from backend (which uses IP geolocation)
     (async () => {

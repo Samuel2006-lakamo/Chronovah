@@ -223,7 +223,7 @@ export default function UpgradePage() {
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {(["NGN", "USD", "GBP", "EUR"] as const).map((code) => (
+                    {(["NGN", "USD"] as const).map((code) => (
                       <button
                         key={code}
                         onClick={() => setCurrency(code)}
@@ -279,7 +279,7 @@ export default function UpgradePage() {
                   </p>
                   <p className="mt-0.5 text-xs text-muted">
                     {currency.cardOnly
-                      ? "International payments are processed by card only via Paystack."
+                      ? "Card payment only · Settled in NGN at current exchange rate"
                       : "NGN payments support all Paystack channels including bank transfer and USSD."}
                   </p>
                 </div>
@@ -370,12 +370,12 @@ export default function UpgradePage() {
                 </div>
               </div>
 
-              {/* International note */}
+              {/* USD note */}
               {currency.cardOnly && (
                 <div className="mt-4 flex items-start gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/5 px-4 py-3">
                   <Info size={14} className="mt-0.5 shrink-0 text-yellow-600 dark:text-yellow-400" />
                   <p className="text-xs text-yellow-700 dark:text-yellow-300">
-                    International payments are card-only. Bank transfer and USSD are available for NGN.
+                    USD payments are card only and settled in NGN at the current exchange rate.
                   </p>
                 </div>
               )}
