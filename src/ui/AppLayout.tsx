@@ -4,6 +4,7 @@ import Sidebar from "../components/Sidebar";
 import ThemeQuickSwitcher from "../components/ThemeQuickSwitcher";
 import { useSidebar } from "../hooks/useSidebar";
 import BottomNav from "../components/BottomNav";
+import UpgradeNudge from "../components/UpgradeNudge";
 
 function AppLayout() {
   const { isOpen } = useSidebar();
@@ -37,6 +38,9 @@ function AppLayout() {
 
       {/* Theme Quick Switcher */}
       <ThemeQuickSwitcher />
+
+      {/* Upgrade nudge — shows once per day for free users */}
+      <UpgradeNudge />
     </div>
   );
 }
