@@ -12,7 +12,7 @@ function DashStat() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.06 }}
-          className="bg-card border border-default rounded-xl p-3 sm:p-4 shadow-sm"
+          className="bg-card border border-default rounded-xl p-4 shadow-sm"
         >
           <div className="flex items-center justify-between">
             <div>
