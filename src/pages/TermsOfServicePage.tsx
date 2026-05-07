@@ -4,6 +4,10 @@ import { motion } from "framer-motion";
 import { useSEO } from "../hooks/useSEO";
 
 const LAST_UPDATED = "May 2, 2026";
+
+const sections = [
+  {
+    title: "1. Acceptance of terms",
     body: `By creating an account or using Chronovah ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.`,
   },
   {
