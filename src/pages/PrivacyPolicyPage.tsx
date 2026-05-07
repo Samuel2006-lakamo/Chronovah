@@ -4,6 +4,10 @@ import { motion } from "framer-motion";
 import { useSEO } from "../hooks/useSEO";
 
 const LAST_UPDATED = "May 2, 2026";
+
+const sections = [
+  {
+    title: "1. Information we collect",
     body: `Chronovah is designed to store your data locally on your device using IndexedDB (via Dexie.js). We collect minimal information necessary to operate the service:
 
 • Account information: your name, email address, and hashed password when you register.
