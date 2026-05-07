@@ -1,7 +1,12 @@
 {
+  
   "rewrites": [
-    { "source": "/((?!.*\\.).*)", "destination": "/" }
+    {
+      "source": "/((?!sitemap.xml|robots.txt|og-image.png).*)",
+      "destination": "/index.html"
+    }
   ],
+
   "headers": [
     {
       "source": "/(.*)",
