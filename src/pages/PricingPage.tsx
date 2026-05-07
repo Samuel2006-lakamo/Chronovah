@@ -72,9 +72,9 @@ export default function PricingPage() {
   const { currency, setCurrency } = useCurrency();
 
   useSEO({
-    title: "Pricing — Free & Pro Plans",
+    title: "Pricing — Free App to Store Notes, Journal, People & Places",
     description:
-      "Start free forever with unlimited notes. Upgrade to Pro for unlimited journal, people, and places. Cancel anytime.",
+      "Chronovah is free forever for notes. Upgrade to Pro to store unlimited journal entries, people's details, and places you've visited — all offline, all private. No hidden fees.",
     canonical: "/pricing",
   });
 

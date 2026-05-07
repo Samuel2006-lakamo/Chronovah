@@ -69,9 +69,9 @@ To exercise any of these rights, email us at support@chronovah.com.`,
 
 export default function PrivacyPolicyPage() {
   useSEO({
-    title: "Privacy Policy",
+    title: "Privacy Policy — How Chronovah Stores Your Data Locally",
     description:
-      "Chronovah stores your data locally on your device. Read how we handle your information, what we collect, and your rights.",
+      "Chronovah stores your notes, journal, people, and places data locally on your device using offline-first architecture. Read our privacy policy to understand exactly what we collect.",
     canonical: "/privacy",
   });
 

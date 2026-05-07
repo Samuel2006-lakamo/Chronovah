@@ -54,9 +54,9 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
 
   useSEO({
-    title: "Contact Us",
+    title: "Contact — Get Help with Your Personal Workspace App",
     description:
-      "Have a question, bug report, or feature request? Get in touch with the Chronovah team — we reply within 2 business days.",
+      "Contact the Chronovah team for help with notes, journal, people, or places storage. We reply within 2 business days.",
     canonical: "/contact",
   });
 

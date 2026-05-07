@@ -77,9 +77,9 @@ export default function AboutPage() {
   const { user } = useAuth();
 
   useSEO({
-    title: "About — One Workspace for Everything That Matters",
+    title: "About — Offline-First App to Store Notes, Journal, People & Places",
     description:
-      "Learn why we built Chronovah — an offline-first, privacy-focused personal workspace for notes, journal, people, and places.",
+      "Learn how Chronovah works — an offline-first personal workspace that lets you store notes, write journal entries, save people's details, and track places you've visited. Private, fast, and always available without internet.",
     canonical: "/about",
   });
 

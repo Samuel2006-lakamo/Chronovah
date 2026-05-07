@@ -16,9 +16,9 @@ import { useSEO } from "../hooks/useSEO";
  */
 function Homepage() {
   useSEO({
-    title: "Your Private Personal Workspace",
+    title: "Offline-First Personal Workspace — Notes, Journal, People & Places",
     description:
-      "Chronovah is an offline-first workspace for notes, journal, people, and places. Private by design, free to start.",
+      "Chronovah is an offline-first app to store and organise your notes, journal entries, people contacts, and places — all in one private workspace. Works without internet. Free to start.",
     canonical: "/",
   });
 

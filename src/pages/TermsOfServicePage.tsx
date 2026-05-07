@@ -70,9 +70,9 @@ Subscriptions renew automatically unless cancelled before the renewal date. You 
 
 export default function TermsOfServicePage() {
   useSEO({
-    title: "Terms of Service",
+    title: "Terms of Service — Chronovah Personal Workspace App",
     description:
-      "Read the terms and conditions governing your use of Chronovah — your offline-first personal workspace.",
+      "Terms governing your use of Chronovah — the offline-first app to store notes, journal entries, people details, and places. Read before signing up.",
     canonical: "/terms",
   });
 

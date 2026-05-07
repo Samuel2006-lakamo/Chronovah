@@ -52,9 +52,9 @@ export default function RefundPolicyPage() {
   const navigate = useNavigate();
 
   useSEO({
-    title: "Refund Policy",
+    title: "Refund Policy — Chronovah Subscription",
     description:
-      "All Chronovah subscription payments are final. Read our refund policy to understand cancellations and exceptions.",
+      "All Chronovah subscription payments are final. Understand cancellations, exceptions, and how billing works for our offline-first notes, journal, people, and places app.",
     canonical: "/refund",
   });
 
