@@ -1,12 +1,9 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { motion } from "framer-motion";
+import { useSEO } from "../hooks/useSEO";
 
 const LAST_UPDATED = "May 2, 2026";
-
-const sections = [
-  {
-    title: "1. Acceptance of terms",
     body: `By creating an account or using Chronovah ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.`,
   },
   {
@@ -68,6 +65,13 @@ Subscriptions renew automatically unless cancelled before the renewal date. You 
 ];
 
 export default function TermsOfServicePage() {
+  useSEO({
+    title: "Terms of Service",
+    description:
+      "Read the terms and conditions governing your use of Chronovah — your offline-first personal workspace.",
+    canonical: "/terms",
+  });
+
   return (
     <>
       <Header />

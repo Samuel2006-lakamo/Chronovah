@@ -3,6 +3,7 @@ import Footer from "../components/Footer";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, MessageSquare, Clock, ArrowRight, CheckCircle } from "lucide-react";
+import { useSEO } from "../hooks/useSEO";
 
 const TOPICS = [
   "General question",
@@ -51,6 +52,13 @@ export default function ContactPage() {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useSEO({
+    title: "Contact Us",
+    description:
+      "Have a question, bug report, or feature request? Get in touch with the Chronovah team — we reply within 2 business days.",
+    canonical: "/contact",
+  });
 
   const isValid = name.trim() && email.trim() && message.trim().length >= 10;
 

@@ -141,7 +141,7 @@ export default function PlaceDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-default pt-20 pb-24">
+    <div className="min-h-screen  pt-20 pb-24">
       {/* Hero Section with Image Gallery */}
       <div className="relative h-[50vh] md:h-[60vh] bg-primary-900">
         {place.images && place.images.length > 0 && !heroImgError ? (

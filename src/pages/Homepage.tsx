@@ -7,6 +7,7 @@ import PricingSection from "../features/Hopepage/PricingSection";
 import UserFeedback from "../features/Hopepage/UserFeedback";
 import Faq from "../features/Hopepage/Faq";
 import CTAComponent from "../features/Hopepage/CTA";
+import { useSEO } from "../hooks/useSEO";
 
 /**
  * Section order:
@@ -14,6 +15,13 @@ import CTAComponent from "../features/Hopepage/CTA";
  * → Testimonials (social proof) → FAQ → CTA (final push)
  */
 function Homepage() {
+  useSEO({
+    title: "Your Private Personal Workspace",
+    description:
+      "Chronovah is an offline-first workspace for notes, journal, people, and places. Private by design, free to start.",
+    canonical: "/",
+  });
+
   return (
     <>
       <Header />

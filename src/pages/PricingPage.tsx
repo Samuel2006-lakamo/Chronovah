@@ -22,6 +22,7 @@ import CurrencySelector from "../components/CurrencySelector";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import db from "../database/db";
+import { useSEO } from "../hooks/useSEO";
 
 /* ─── data ─────────────────────────────────────────────────── */
 const FREE_FEATURES = [
@@ -69,6 +70,13 @@ export default function PricingPage() {
   const { isProActive } = useSubscriptionStore();
   const [yearly, setYearly] = useState(false);
   const { currency, setCurrency } = useCurrency();
+
+  useSEO({
+    title: "Pricing — Free & Pro Plans",
+    description:
+      "Start free forever with unlimited notes. Upgrade to Pro for unlimited journal, people, and places. Cancel anytime.",
+    canonical: "/pricing",
+  });
 
   const journalCount = useLiveQuery(
     async () => (user ? db.journal.where("userId").equals(user.id).count() : 0),

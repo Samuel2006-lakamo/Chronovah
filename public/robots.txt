@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Block authenticated app routes — no value for crawlers
+Disallow: /dashboard
+Disallow: /notes
+Disallow: /journal
+Disallow: /places
+Disallow: /people
+Disallow: /settings
+Disallow: /billing
+Disallow: /upgrade
+Disallow: /payment/
+Disallow: /signin
+Disallow: /signup
+Disallow: /forgot
+Disallow: /otpverification
+Disallow: /reset-password
+Disallow: /oauth/
+
+Sitemap: https://chronovah.vercel.app/sitemap.xml

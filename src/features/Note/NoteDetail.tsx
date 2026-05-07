@@ -183,7 +183,7 @@ export default function NoteDetail() {
 
   return (
     <div className="min-h-screen  pt-20 pb-24 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="mx-auto">
 
         {/* ── Header bar ── */}
         <div className="flex items-center justify-between mb-6">

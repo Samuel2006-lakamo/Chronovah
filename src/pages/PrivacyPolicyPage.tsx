@@ -1,12 +1,9 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { motion } from "framer-motion";
+import { useSEO } from "../hooks/useSEO";
 
 const LAST_UPDATED = "May 2, 2026";
-
-const sections = [
-  {
-    title: "1. Information we collect",
     body: `Chronovah is designed to store your data locally on your device using IndexedDB (via Dexie.js). We collect minimal information necessary to operate the service:
 
 • Account information: your name, email address, and hashed password when you register.
@@ -67,6 +64,13 @@ To exercise any of these rights, email us at support@chronovah.com.`,
 ];
 
 export default function PrivacyPolicyPage() {
+  useSEO({
+    title: "Privacy Policy",
+    description:
+      "Chronovah stores your data locally on your device. Read how we handle your information, what we collect, and your rights.",
+    canonical: "/privacy",
+  });
+
   return (
     <>
       <Header />

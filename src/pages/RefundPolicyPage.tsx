@@ -3,6 +3,7 @@ import Footer from "../components/Footer";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { AlertCircle } from "lucide-react";
+import { useSEO } from "../hooks/useSEO";
 
 const LAST_UPDATED = "May 2, 2026";
 
@@ -49,6 +50,13 @@ We are not obligated to grant any exception and will evaluate each case individu
 
 export default function RefundPolicyPage() {
   const navigate = useNavigate();
+
+  useSEO({
+    title: "Refund Policy",
+    description:
+      "All Chronovah subscription payments are final. Read our refund policy to understand cancellations and exceptions.",
+    canonical: "/refund",
+  });
 
   return (
     <>

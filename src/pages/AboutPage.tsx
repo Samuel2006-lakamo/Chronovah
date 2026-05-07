@@ -14,6 +14,7 @@ import {
   NotebookPen,
   ArrowRight,
 } from "lucide-react";
+import { useSEO } from "../hooks/useSEO";
 
 const PILLARS = [
   {
@@ -74,6 +75,13 @@ const fadeUp = (delay = 0) => ({
 export default function AboutPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  useSEO({
+    title: "About — One Workspace for Everything That Matters",
+    description:
+      "Learn why we built Chronovah — an offline-first, privacy-focused personal workspace for notes, journal, people, and places.",
+    canonical: "/about",
+  });
 
   return (
     <>
