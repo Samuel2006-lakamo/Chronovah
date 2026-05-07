@@ -48,7 +48,7 @@ export default function PlaceStats({ stats }: PlaceStatsProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-card border border-default rounded-xl p-4 hover:shadow-medium transition-all"
+            className="bg-card border border-default rounded-xl p-3 sm:p-4 hover:shadow-medium transition-all"
           >
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg flex-shrink-0 ${stat.bgClass}`}>

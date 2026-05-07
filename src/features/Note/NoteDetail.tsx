@@ -169,7 +169,7 @@ export default function NoteDetail() {
 
   if (!note) {
     return (
-      <div className="min-h-screen bg-default pt-20 px-4">
+      <div className="min-h-screen pt-20 px-4">
         <div className="max-w-4xl mx-auto text-center py-20">
           <FileText size={48} className="mx-auto text-muted mb-4" />
           <h2 className="text-xl font-semibold text-primary mb-2">Note not found</h2>
@@ -182,7 +182,7 @@ export default function NoteDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-default pt-20 pb-24 px-4 sm:px-6">
+    <div className="min-h-screen  pt-20 pb-24 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto">
 
         {/* ── Header bar ── */}

@@ -25,7 +25,7 @@ function AppLayout() {
       </aside>
 
       {/* Main content */}
-      <main className="bg-gray-100 dark:bg-gray-950 p-4 md:p-6 overflow-y-auto">
+      <main className="bg-gray-100 dark:bg-gray-950  md:p-6 overflow-y-auto">
         <div className=" mx-auto flex flex-col gap-6">
           <Outlet />
         </div>

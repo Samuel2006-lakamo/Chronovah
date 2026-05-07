@@ -26,7 +26,7 @@ export default function PeopleStats({ stats }: PeopleStatsProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="bg-card border border-default rounded-xl p-3 hover:shadow-medium transition-all"
+            className="bg-card border border-default rounded-xl p-3 sm:p-4 hover:shadow-medium transition-all"
           >
             <div className="flex flex-col items-center text-center gap-1.5">
               <div className={`p-2 rounded-lg ${stat.bgClass}`}>

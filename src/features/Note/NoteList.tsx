@@ -216,7 +216,7 @@ export default function Notes() {
     selectedTags.length > 0;
 
   return (
-    <div className=" bg-defaul  pt-20 pb-24 px-4 sm:px-6">
+    <div className=" bg-defaul  pt-20 pb-24 px-3 sm:px-6">
       <ToastContainer toasts={toasts} onClose={removeToast} />
       <div className="min-w-full">
         {/* Header with stats */}

@@ -216,7 +216,7 @@ export default function Places() {
     searchTerm || selectedType !== "all" || selectedTags.length > 0;
 
   return (
-    <div className="min-h-screen  pt-20 pb-24 px-4 sm:px-6">
+    <div className="min-h-screen  pt-20 pb-24 px-3 sm:px-6">
       <ToastContainer toasts={toasts} onClose={removeToast} />
       <div className="">
         {/* Header */}
