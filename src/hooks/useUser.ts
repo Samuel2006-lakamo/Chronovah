@@ -13,6 +13,7 @@ export interface User {
   username?: string;
   bio?: string;
   favoriteQuote?: string;
+  emailReminders?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -38,6 +39,7 @@ async function cacheUserProfile(userData: User) {
       username: userData.username,
       bio: userData.bio,
       favoriteQuote: userData.favoriteQuote,
+      emailReminders: userData.emailReminders,
       updatedAt: userData.updatedAt ?? new Date().toISOString(),
     });
   } catch (err) {

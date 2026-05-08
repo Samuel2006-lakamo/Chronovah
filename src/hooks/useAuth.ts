@@ -8,6 +8,7 @@ type User = {
   username?: string;
   bio?: string;
   favoriteQuote?: string;
+  emailReminders?: boolean;
   createdAt?: string;
   updatedAt?: string;
 } | null;
