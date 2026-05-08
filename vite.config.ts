@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate", // auto updates service worker
-      includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
+      includeAssets: ["favicon.ico", "robots.txt", "sitemap.xml", "apple-touch-icon.png", "og-image.png"],
       manifest: {
         name: "Chronovah",
         short_name: "Chronovah",
