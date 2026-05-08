@@ -254,6 +254,11 @@
   /* ===== TYPOGRAPHY UTILITIES ===== */
   
   /* UI Font (Inter) - for components, buttons, labels, navigation */
+  .font-display {
+    font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    font-optical-sizing: auto;
+  }
+
   .font-ui-xs {
     font-family: var(--font-ui);
     font-size: 0.75rem;

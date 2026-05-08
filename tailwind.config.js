@@ -8,6 +8,13 @@ export default {
       screens: {
         xs: "475px",
       },
+      fontFamily: {
+        display: ["Bricolage Grotesque", "ui-sans-serif", "system-ui", "sans-serif"],
+        ui: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Inter", "Plus Jakarta Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+        content: ["Source Serif 4", "Georgia", "Times New Roman", "serif"],
+      },
 
       // Flattened colors for better Tailwind compatibility
       colors: {

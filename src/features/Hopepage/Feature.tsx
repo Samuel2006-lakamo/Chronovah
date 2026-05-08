@@ -68,11 +68,11 @@ const PILLARS: Pillar[] = [
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } },
 };
 const item = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { type: "spring" as const, damping: 22, stiffness: 90 } },
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const } },
 };
 
 export default function Features() {
@@ -100,9 +100,9 @@ export default function Features() {
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }}
           className="mb-16 max-w-2xl"
         >
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary-600 dark:text-primary-400">
@@ -133,7 +133,7 @@ export default function Features() {
             <motion.div
               key={pillar.title}
               variants={item}
-              className="group relative flex flex-col rounded-2xl border border-default bg-card p-7 transition-shadow duration-300 hover:shadow-medium"
+              className="group relative flex flex-col rounded-2xl border border-default bg-card p-7 transition-all duration-500 hover:shadow-medium hover:-translate-y-1"
             >
               {/* Icon */}
               <div
