@@ -12,7 +12,7 @@ interface SEOOptions {
 }
 
 const SITE_NAME = "Chronovah";
-const BASE_URL = "https://chronovah.vercel.app";
+const BASE_URL = "https://www.chronovah.xyz";
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
 
 function setMeta(name: string, content: string, attr: "name" | "property" = "name") {

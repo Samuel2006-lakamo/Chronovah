@@ -2,43 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://chronovah.vercel.app/</loc>
+    <loc>https://www.chronovah.xyz/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://chronovah.vercel.app/pricing</loc>
+    <loc>https://www.chronovah.xyz/pricing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://chronovah.vercel.app/about</loc>
+    <loc>https://www.chronovah.xyz/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://chronovah.vercel.app/contact</loc>
+    <loc>https://www.chronovah.xyz/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://chronovah.vercel.app/privacy</loc>
+    <loc>https://www.chronovah.xyz/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://chronovah.vercel.app/terms</loc>
+    <loc>https://www.chronovah.xyz/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://chronovah.vercel.app/refund</loc>
+    <loc>https://www.chronovah.xyz/refund</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

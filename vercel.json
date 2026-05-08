@@ -1,12 +1,8 @@
 {
-  
-  "rewrites": [
-    {
-      "source": "/((?!sitemap.xml|robots.txt|og-image.png).*)",
-      "destination": "/index.html"
-    }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/" }
   ],
-
   "headers": [
     {
       "source": "/(.*)",

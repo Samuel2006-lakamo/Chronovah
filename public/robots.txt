@@ -18,4 +18,4 @@ Disallow: /otpverification
 Disallow: /reset-password
 Disallow: /oauth/
 
-Sitemap: https://chronovah.vercel.app/sitemap.xml
+Sitemap: https://www.chronovah.xyz/sitemap.xml
