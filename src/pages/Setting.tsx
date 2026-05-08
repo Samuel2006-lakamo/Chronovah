@@ -4,6 +4,7 @@ import CommonPageHeader from "../components/CommonPageHeader";
 import AppearanceStorage from "../features/settings/AppearanceStorage";
 import BackupRestore from "../features/settings/BackupRestore";
 import TrashBin from "../features/settings/TrashBin";
+import NotificationSettings from "../features/settings/NotificationSettings";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { useToast } from "../hooks/useToast";
 import { useState } from "react";
@@ -46,6 +47,7 @@ export default function Settings() {
     <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 md:space-y-8 my-16 sm:my-20">
       <CommonPageHeader heading="Settings" isSetting={true} />
       <AppearanceStorage />
+      <NotificationSettings />
       <BackupRestore />
       <TrashBin />
 

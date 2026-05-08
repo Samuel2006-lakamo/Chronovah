@@ -24,6 +24,7 @@ export interface UserProfile {
   username?: string;
   bio?: string;
   favoriteQuote?: string;
+  emailReminders?: boolean;
   updatedAt: string;
 }
 
