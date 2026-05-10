@@ -57,7 +57,7 @@ export default function Footer() {
               </div>
               <span
                 className="text-base font-bold tracking-tight text-primary"
-                style={{ fontFamily: "var(--font-heading-bricolage, 'Bricolage Grotesque', sans-serif)" }}
+                style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
               >Chronovah</span>
             </button>
             <p className="max-w-[220px] text-sm leading-relaxed text-muted">

@@ -130,16 +130,15 @@ function SettingsRow({ item }: { item: SettingsItem }) {
 }
 
 export default function Settings() {
-  const navigate = useNavigate();
+
   const { logout } = useAuth();
   const { isProActive } = useSubscriptionStore();
   const sections = buildSections(isProActive);
 
   return (
-    // pt-20 clears the fixed header on all screen sizes
-    // pb-24 clears the mobile bottom nav
-    <div className="pt-20 pb-24 px-3 sm:px-4 md:px-6">
-      <div className="max-w-2xl mx-auto">
+    // AppLayout handles header clearance via pt-[60px].
+    <div className="py-6 px-3 sm:px-4 md:px-6 pb-24">
+      <div className=" mx-auto">
 
         {/* Page title */}
         <h1 className="text-2xl font-bold text-primary tracking-tight mb-6">Settings</h1>

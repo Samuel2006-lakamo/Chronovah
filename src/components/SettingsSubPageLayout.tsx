@@ -12,10 +12,10 @@ export default function SettingsSubPageLayout({ title, description, children }: 
   const navigate = useNavigate();
 
   return (
-    // pt-20 clears fixed header on all screen sizes (header is fixed, AppLayout md:p-6 does NOT clear it)
-    // pb-24 clears the mobile bottom nav
-    <div className="pt-20 pb-24 px-3 sm:px-4 md:px-6">
-      <div className="max-w-2xl mx-auto">
+    // AppLayout already adds pt-[60px] for the fixed header.
+    // This just adds comfortable breathing room inside the content area.
+    <div className="py-6 px-3 sm:px-4 md:px-6 pb-24">
+      <div className=" mx-auto">
         {/* Back button */}
         <button
           onClick={() => navigate("/settings")}

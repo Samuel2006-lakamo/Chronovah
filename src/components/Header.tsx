@@ -168,7 +168,7 @@ function Header() {
             </div>
             <span
               className="font-bold ml-[-6px] text-base sm:text-lg text-primary"
-              style={{ fontFamily: "var(--font-heading-bricolage, 'Bricolage Grotesque', sans-serif)" }}
+              style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
             >
               Chronovah
             </span>
@@ -343,9 +343,8 @@ function Header() {
                 <div className="p-4 border-b border-default">
                   <div className="flex items-center gap-2">
                     <Box className="w-8 h-8 text-primary-500 p-1" />
-                    <span
-                      className="font-bold text-lg text-primary"
-                      style={{ fontFamily: "var(--font-heading-bricolage, 'Bricolage Grotesque', sans-serif)" }}
+                    <span className="font-bold text-lg text-primary"
+                      style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
                     >
                       Chronovah
                     </span>

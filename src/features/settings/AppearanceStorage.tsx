@@ -70,10 +70,14 @@ export default function AppearanceStorage() {
         <div className="grid grid-cols-2 gap-3">
           {SURFACES.map((s) => {
             const isActive = currentSurface === s.name;
-            // Preview swatches: [bg, card, border]
-            const swatches = s.name === 'cool'
-              ? ['#f9fafb', '#ffffff', '#e5e7eb']
-              : ['#F7F4F0', '#FFFFFF', '#D8D3CB'];
+            // Show dark swatches when in dark mode, light swatches otherwise
+            const swatches = isDarkMode
+              ? s.name === 'cool'
+                ? ['#0b1120', '#1e293b', '#334155']   // cool dark
+                : ['#191919', '#242424', '#3A3A3A']   // warm dark
+              : s.name === 'cool'
+                ? ['#f9fafb', '#ffffff', '#e5e7eb']   // cool light
+                : ['#F7F4F0', '#FFFFFF', '#D8D3CB'];  // warm light
             return (
               <button
                 key={s.name}
@@ -82,13 +86,16 @@ export default function AppearanceStorage() {
                   isActive ? 'border-primary-500 bg-primary-500/5' : 'border-default hover:border-primary-500/40'
                 }`}
               >
-                {/* Mini preview */}
-                <div className="flex gap-1 mb-2">
+                {/* Mini preview — 3 swatches showing bg, card, border */}
+                <div className="flex gap-1 mb-2 rounded-md overflow-hidden">
                   {swatches.map((color, i) => (
                     <div
                       key={i}
-                      className="h-5 flex-1 rounded"
-                      style={{ backgroundColor: color, border: `1px solid ${swatches[2]}` }}
+                      className="h-6 flex-1"
+                      style={{
+                        backgroundColor: color,
+                        border: i === 2 ? `2px solid ${color}` : undefined,
+                      }}
                     />
                   ))}
                 </div>

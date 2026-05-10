@@ -7,6 +7,7 @@ export default function NotificationsPage() {
       title="Notifications"
       description="Control how and when Chronovah contacts you."
     >
+      
       <NotificationSettings />
     </SettingsSubPageLayout>
   );

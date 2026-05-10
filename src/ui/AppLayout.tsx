@@ -5,41 +5,45 @@ import ThemeQuickSwitcher from "../components/ThemeQuickSwitcher";
 import { useSidebar } from "../hooks/useSidebar";
 import BottomNav from "../components/BottomNav";
 import UpgradeNudge from "../components/UpgradeNudge";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 function AppLayout() {
   const { isOpen } = useSidebar();
+  const { width } = useWindowSize();
+  const isMd = width >= 768;
+
   return (
-    <div
-      className={` ${
-        isOpen ? "md:grid-cols-[260px_1fr]" : " md:grid-cols-[80px_1fr]"
-      } min-h-screen grid bg-default  grid-cols-1 grid-rows-[auto_1fr]`}
-    >
-      {/* Header */}
-      <header className="col-span-full">
-        <Header />
-      </header>
+    <div className="min-h-screen bg-default">
+      {/* Fixed header — ~60px tall */}
+      <Header />
 
-      {/* Sidebar (hidden on mobile) */}
-      <aside className="hidden md:block">
+      {/* Fixed sidebar — desktop only */}
+      <div className="hidden md:block">
         <Sidebar />
-      </aside>
+      </div>
 
-      {/* Main content */}
-      <main className="bg-gray-100 bg-default md:p-6 overflow-y-auto">
-        <div className=" mx-auto flex flex-col gap-6">
-          <Outlet />
-        </div>
-      </main>
-      {/* 
-       Mobile bottom nav */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full">
+      {/* Main content
+          pt-[60px] clears the fixed header.
+          On desktop, marginLeft tracks the sidebar width with the same
+          transition timing as the sidebar itself.
+      */}
+      <div
+        className="bg-default min-h-screen"
+        style={{
+          paddingTop: "60px",
+          marginLeft: isMd ? (isOpen ? "260px" : "72px") : "0px",
+          transition: "margin-left 280ms cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      >
+        <Outlet />
+      </div>
+
+      {/* Mobile bottom nav */}
+      <div className="md:hidden fixed bottom-0 left-0 w-full z-40">
         <BottomNav />
       </div>
 
-      {/* Theme Quick Switcher */}
       <ThemeQuickSwitcher />
-
-      {/* Upgrade nudge — shows once per day for free users */}
       <UpgradeNudge />
     </div>
   );
