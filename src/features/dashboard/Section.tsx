@@ -21,8 +21,8 @@ function Section({ title, items }: { title: string; items: SectionItem[] }) {
 
   return (
     <section aria-label={title}>
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-primary">{title}</h2>
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <h2 className="text-sm sm:text-base font-semibold text-primary">{title}</h2>
         {route && (
           <button
             onClick={() => navigate(route)}
@@ -34,7 +34,7 @@ function Section({ title, items }: { title: string; items: SectionItem[] }) {
       </div>
 
       {items.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
           {items.map((item) => (
             <ItemCard
               key={`${item.item}-${item.id}`}
@@ -46,8 +46,8 @@ function Section({ title, items }: { title: string; items: SectionItem[] }) {
           ))}
         </div>
       ) : (
-        <div className="bg-card border border-default rounded-xl px-4 py-6 text-center">
-          <p className="text-sm text-muted">
+        <div className="bg-card border border-default rounded-xl px-3 sm:px-4 py-4 sm:py-6 text-center">
+          <p className="text-xs sm:text-sm text-muted">
             No {title.replace("Recent ", "").toLowerCase()} yet.
           </p>
           {route && (

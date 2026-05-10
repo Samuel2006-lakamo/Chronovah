@@ -17,7 +17,7 @@ export default function PeopleStats({ stats }: PeopleStatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-2.5 md:gap-3">
       {statCards.map((stat, index) => {
         const Icon = stat.icon;
         return (
@@ -26,13 +26,13 @@ export default function PeopleStats({ stats }: PeopleStatsProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="bg-card border border-default rounded-xl p-3 hover:shadow-medium transition-all"
+            className="bg-card border border-default rounded-lg sm:rounded-xl p-2 sm:p-2.5 hover:shadow-medium transition-all"
           >
-            <div className="flex flex-col items-center text-center gap-1.5">
-              <div className={`p-2 rounded-lg ${stat.bgClass}`}>
-                <Icon size={16} className={stat.iconClass} />
+            <div className="flex flex-col items-center text-center gap-1">
+              <div className={`p-1.5 sm:p-2 rounded-lg ${stat.bgClass}`}>
+                <Icon size={14} className={stat.iconClass} />
               </div>
-              <p className="text-base font-semibold text-primary tabular-nums">{stat.value}</p>
+              <p className="text-sm sm:text-base font-semibold text-primary tabular-nums" style={{ fontFamily: 'var(--font-heading)' }}>{stat.value}</p>
               <p className="text-xs text-muted leading-tight">{stat.label}</p>
             </div>
           </motion.div>

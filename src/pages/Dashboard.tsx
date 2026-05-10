@@ -15,7 +15,7 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="p-6 mt-15 mb-15 space-y-8 transition-colors duration-300">
+    <div className="px-3 sm:px-4 md:px-6 mt-15 mb-15 space-y-6 sm:space-y-8 transition-colors duration-300">
       <DashHeader />
       <DashStat />
 

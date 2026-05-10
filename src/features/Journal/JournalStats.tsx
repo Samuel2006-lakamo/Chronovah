@@ -15,7 +15,7 @@ export default function JournalStats({ stats }: JournalStatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
       {statCards.map((stat, index) => {
         const Icon = stat.icon;
         return (
@@ -24,18 +24,18 @@ export default function JournalStats({ stats }: JournalStatsProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-card border border-default rounded-xl p-4 hover:shadow-medium transition-all"
+            className="bg-card border border-default rounded-lg sm:rounded-xl p-2.5 sm:p-3 md:p-4 hover:shadow-medium transition-all"
           >
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg flex-shrink-0 ${stat.bgClass}`}>
-                <Icon size={18} className={stat.iconClass} />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={`p-1.5 sm:p-2 rounded-lg flex-shrink-0 ${stat.bgClass}`}>
+                <Icon size={16} className={stat.iconClass} />
               </div>
               <div>
                 <p className="text-xs text-muted">{stat.label}</p>
-                <p className="text-xl font-semibold text-primary tabular-nums">
+                <p className="text-base sm:text-xl font-semibold text-primary tabular-nums" style={{ fontFamily: 'var(--font-heading)' }}>
                   {stat.value}
                   {stat.suffix && (
-                    <span className="text-sm ml-0.5 font-normal text-muted">{stat.suffix}</span>
+                    <span className="text-xs sm:text-sm ml-0.5 font-normal text-muted">{stat.suffix}</span>
                   )}
                 </p>
               </div>

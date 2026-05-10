@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import "./index.css";
 import AppLayout from "./ui/AppLayout";
 import ProtectedRoute from "./pages/ProtectedRoute";
@@ -8,6 +8,8 @@ import JournalDetail from "./features/Journal/JournalDetail";
 import PersonDetail from "./features/people/PersonDetail";
 import PlanGuard from "./components/subscription/PlanGuard";
 import Spinner from "./ui/Spinner";
+import { initializeFont } from "./lib/font";
+
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Note = lazy(() => import("./pages/Note"));
 const NoteDetail = lazy(() => import("./features/Note/NoteDetail"));
@@ -16,6 +18,10 @@ const Places = lazy(() => import("./pages/Places"));
 const People = lazy(() => import("./pages/People"));
 const Setting = lazy(() => import("./pages/Setting"));
 const ProfileSetting = lazy(() => import("./pages/ProfileSetting"));
+const SettingsAppearance = lazy(() => import("./pages/settings/AppearancePage"));
+const SettingsNotifications = lazy(() => import("./pages/settings/NotificationsPage"));
+const SettingsStorage = lazy(() => import("./pages/settings/StoragePage"));
+const SettingsAccount = lazy(() => import("./pages/settings/AccountPage"));
 const ItemDetails = lazy(() => import("./ui/ItemDetails"));
 const Homepage = lazy(() => import("./pages/Homepage"));
 const SignIn = lazy(() => import("./pages/SignIn"));
@@ -36,6 +42,10 @@ const RefundPolicyPage = lazy(() => import("./pages/RefundPolicyPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
 
 function App() {
+  useEffect(() => {
+    // Initialize font system on app startup
+    initializeFont();
+  }, []);
 
   return (
     <BrowserRouter>
@@ -109,6 +119,10 @@ function App() {
             />
             <Route path="settings" element={<Setting />} />
             <Route path="settings/profile" element={<ProfileSetting />} />
+            <Route path="settings/appearance" element={<SettingsAppearance />} />
+            <Route path="settings/notifications" element={<SettingsNotifications />} />
+            <Route path="settings/storage" element={<SettingsStorage />} />
+            <Route path="settings/account" element={<SettingsAccount />} />
             <Route path="billing" element={<BillingPage />} />
             <Route path="item/:type/:id" element={<ItemDetails />} />
           </Route>
