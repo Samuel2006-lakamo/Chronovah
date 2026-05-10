@@ -18,4 +18,4 @@ Disallow: /otpverification
 Disallow: /reset-password
 Disallow: /oauth/
 
-Sitemap: https://www.chronovah.xyz/sitemap.xml
+Sitemap: https://chronovah.xyz/sitemap.xml
