@@ -28,9 +28,9 @@ function AppLayout() {
           transition timing as the sidebar itself.
       */}
       <div
-        className="bg-default min-h-screen"
+        className="bg-default min-h-screen pt-[20px] sm:pt-[40px] md:pt-[60px] "
         style={{
-          paddingTop: "60px",
+        
           marginLeft: isMd ? (isOpen ? "260px" : "72px") : "0px",
           transition: "margin-left 280ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
