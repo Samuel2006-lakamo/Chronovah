@@ -5,16 +5,19 @@ import { useStorage } from "../../hooks/useStorage";
 import ProgressInput from "./ProgressInput";
 import { THEMES, getStoredTheme, setTheme, getThemeColor, type Theme } from "../../lib/theme";
 import { HEADING_FONTS, BODY_FONTS, FONT_PRESETS, getStoredFont, setFont, type HeadingFont, type BodyFont } from "../../lib/font";
+import { SURFACES, getStoredSurface, setSurface, type Surface } from "../../lib/surface";
 
 export default function AppearanceStorage() {
   const { toggleDarkMode, isDarkMode } = useDarkMode();
   const { storageUsed, usedValue, max } = useStorage();
   const [currentTheme, setCurrentTheme] = useState<Theme>('ocean');
+  const [currentSurface, setCurrentSurface] = useState<Surface>('cool');
   const [currentHeadingFont, setCurrentHeadingFont] = useState<HeadingFont>('manrope');
   const [currentBodyFont, setCurrentBodyFont] = useState<BodyFont>('inter');
 
   useEffect(() => {
     setCurrentTheme(getStoredTheme());
+    setCurrentSurface(getStoredSurface());
     const font = getStoredFont();
     setCurrentHeadingFont(font.heading);
     setCurrentBodyFont(font.body);
@@ -58,10 +61,53 @@ export default function AppearanceStorage() {
         </div>
       </div>
 
+      {/* Surface Style */}
+      <div className="space-y-3">
+        <div>
+          <h3 className="text-sm font-semibold text-primary">Surface Style</h3>
+          <p className="text-xs text-muted mt-0.5">Controls background and card colors in both light and dark mode.</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {SURFACES.map((s) => {
+            const isActive = currentSurface === s.name;
+            // Preview swatches: [bg, card, border]
+            const swatches = s.name === 'cool'
+              ? ['#f9fafb', '#ffffff', '#e5e7eb']
+              : ['#F7F4F0', '#FFFFFF', '#D8D3CB'];
+            return (
+              <button
+                key={s.name}
+                onClick={() => { setCurrentSurface(s.name); setSurface(s.name); }}
+                className={`relative p-3 rounded-xl border-2 transition-all text-left ${
+                  isActive ? 'border-primary-500 bg-primary-500/5' : 'border-default hover:border-primary-500/40'
+                }`}
+              >
+                {/* Mini preview */}
+                <div className="flex gap-1 mb-2">
+                  {swatches.map((color, i) => (
+                    <div
+                      key={i}
+                      className="h-5 flex-1 rounded"
+                      style={{ backgroundColor: color, border: `1px solid ${swatches[2]}` }}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs font-semibold text-primary">{s.label}</p>
+                <p className="text-xs text-muted">{s.description}</p>
+                {isActive && (
+                  <div className="absolute top-2 right-2 bg-primary-500 text-white rounded-full p-0.5">
+                    <Check size={10} />
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Theme Selection */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-primary">Theme</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+        <h3 className="text-sm font-semibold text-primary">Theme</h3>        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
           {THEMES.map((theme) => (
             <button
               key={theme.name}

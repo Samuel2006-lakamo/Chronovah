@@ -166,7 +166,10 @@ function Header() {
                 className="relative w-8 h-8 sm:w-10 sm:h-10  text-primary p-1.5"
               />
             </div>
-            <span className="font-bold ml-[-6px] text-base sm:text-lg text-primary">
+            <span
+              className="font-bold ml-[-6px] text-base sm:text-lg text-primary"
+              style={{ fontFamily: "var(--font-heading-bricolage, 'Bricolage Grotesque', sans-serif)" }}
+            >
               Chronovah
             </span>
           </NavLink>
@@ -339,8 +342,11 @@ function Header() {
               <div className="flex flex-col h-full">
                 <div className="p-4 border-b border-default">
                   <div className="flex items-center gap-2">
-                    <Box className="w-8 h-8 rounded-xl text-white bg-primary-500 p-1.5" />
-                    <span className="font-bold text-lg text-primary">
+                    <Box className="w-8 h-8 text-primary-500 p-1" />
+                    <span
+                      className="font-bold text-lg text-primary"
+                      style={{ fontFamily: "var(--font-heading-bricolage, 'Bricolage Grotesque', sans-serif)" }}
+                    >
                       Chronovah
                     </span>
                   </div>

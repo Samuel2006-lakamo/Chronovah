@@ -53,10 +53,12 @@ export default function Footer() {
               className="mb-4 flex items-center gap-2"
             >
               <div className="relative">
-                <div className="absolute inset-0 rounded-xl bg-primary-500 blur-md opacity-50" />
-                <Box className="relative h-7 w-7 rounded-xl bg-primary-500 p-1.5 text-white" />
+                <Box className="relative h-7 w-7 text-primary-500" />
               </div>
-              <span className="text-base font-bold tracking-tight text-primary">Chronovah</span>
+              <span
+                className="text-base font-bold tracking-tight text-primary"
+                style={{ fontFamily: "var(--font-heading-bricolage, 'Bricolage Grotesque', sans-serif)" }}
+              >Chronovah</span>
             </button>
             <p className="max-w-[220px] text-sm leading-relaxed text-muted">
               An offline-first personal workspace for notes, places, people, and journal.

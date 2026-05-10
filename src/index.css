@@ -107,16 +107,16 @@
   --color-text-muted-dark: #888888;
   --color-text-disabled-dark: #444444;
 
-  /* ===== SEMANTIC COLOR TOKENS (Light mode defaults) ===== */
-  --color-bg: var(--color-bg-light);
-  --color-header: var(--color-header-light);
-  --color-card: var(--color-card-light);
-  --color-raised: var(--color-raised-light);
-  --color-border: var(--color-border-light);
-  --color-text: var(--color-text-primary-light);
-  --color-text-secondary: var(--color-text-secondary-light);
-  --color-text-muted: var(--color-text-muted-light);
-  --color-text-disabled: var(--color-text-disabled-light);
+  /* ===== SEMANTIC COLOR TOKENS (Cool light mode — default) ===== */
+  --color-bg:              #ffffff;
+  --color-header:          #f3f4f6;
+  --color-card:            #f9fafb;
+  --color-raised:          #f3f4f6;
+  --color-border:          #e5e7eb;
+  --color-text:            #111827;
+  --color-text-secondary:  #374151;
+  --color-text-muted:      #6b7280;
+  --color-text-disabled:   #d1d5db;
   /* Feature colors - Places */
   --color-places-light: #3b82f6;
   --color-places-dark: #60a5fa;
@@ -165,22 +165,51 @@
   --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
 
-/* ===== DARK MODE OVERRIDES ===== */
+/* ===== DARK MODE OVERRIDES (Cool dark — default) ===== */
 .dark {
-  --color-bg: var(--color-bg-dark);
-  --color-header: var(--color-header-dark);
-  --color-card: var(--color-card-dark);
-  --color-raised: var(--color-raised-dark);
-  --color-border: var(--color-border-dark);
-  --color-text: var(--color-text-primary-dark);
-  --color-text-secondary: var(--color-text-secondary-dark);
-  --color-text-muted: var(--color-text-muted-dark);
-  --color-text-disabled: var(--color-text-disabled-dark);
+  --color-bg:              #0b1120;
+  --color-header:          #0f172a;
+  --color-card:            #1e293b;
+  --color-raised:          #263347;
+  --color-border:          #334155;
+  --color-text:            #f1f5f9;
+  --color-text-secondary:  #cbd5e1;
+  --color-text-muted:      #94a3b8;
+  --color-text-disabled:   #475569;
   /* Feature backgrounds in dark mode */
   --color-places-bg: var(--color-places-bg-dark);
   --color-notes-bg: var(--color-notes-bg-dark);
   --color-people-bg: var(--color-people-bg-dark);
   --color-journal-bg: var(--color-journal-bg-dark);
+}
+
+/* ===== SURFACE STYLE: WARM ===== */
+/* Overrides the cool defaults (which are already set in :root / .dark above) */
+
+/* Warm light mode */
+.surface-warm {
+  --color-bg:     #F7F4F0;
+  --color-header: #EDEAE4;
+  --color-card:   #FFFFFF;
+  --color-raised: #F0EDE8;
+  --color-border: #D8D3CB;
+  --color-text:              #1A1814;
+  --color-text-secondary:    #3D3830;
+  --color-text-muted:        #7A6F62;
+  --color-text-disabled:     #B0A89E;
+}
+
+/* Warm dark mode */
+.dark.surface-warm {
+  --color-bg:     #191919;
+  --color-header: #111111;
+  --color-card:   #242424;
+  --color-raised: #2F2F2F;
+  --color-border: #3A3A3A;
+  --color-text:              #E8E8E8;
+  --color-text-secondary:    #AFAFAF;
+  --color-text-muted:        #888888;
+  --color-text-disabled:     #444444;
 }
 
 /* ===== SEMANTIC COLOR TOKENS ===== */
@@ -301,9 +330,9 @@
 }
 
 .dark.theme-slate {
-  --color-primary-500: #94a3b8;
-  --color-primary-600: #64748b;
-  --color-primary-400: #cbd5e1;
+  --color-primary-500: #cbd5e1;
+  --color-primary-600: #94a3b8;
+  --color-primary-400: #e2e8f0;
 }
 
 /* Ocean theme in dark mode (lighter blues) */
