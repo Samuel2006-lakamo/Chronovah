@@ -80,17 +80,7 @@ export default function Hero() {
           {/* LEFT — copy */}
           <div className="flex flex-col">
 
-            {/* Badge */}
-            <motion.div {...softFade(0)}
-              className="mb-8 inline-flex w-fit items-center gap-2.5 rounded-full border border-primary-500/20 bg-primary-500/[0.07] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-primary-700 dark:border-primary-400/25 dark:bg-primary-500/10 dark:text-primary-300"
-            >
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-500 opacity-60" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary-600 dark:bg-primary-400" />
-              </span>
-              Now in early access
-            </motion.div>
-
+            
             {/* Headline — Bricolage Grotesque, warm and editorial */}
             <motion.h1
               {...softUp(0.08)}
@@ -98,7 +88,7 @@ export default function Hero() {
             >
               One place for
               <br />
-              <span className="bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent dark:from-primary-400 dark:to-primary-300">
+              <span className="text-primary-600">
                 everything that matters
               </span>
             </motion.h1>
