@@ -8,7 +8,6 @@ import {
   Cloud,
   MapPin,
   Image as ImageIcon,
-  Heart,
   Check,
   Plus,
   Eye,
@@ -49,7 +48,7 @@ export default function JournalEditor({
   );
   const [location, setLocation] = useState(entry?.location || "");
   const [images, setImages] = useState<string[]>(entry?.images || []);
-  const [isFavorite, setIsFavorite] = useState(entry?.isFavorite || false);
+  const [isFavorite] = useState(entry?.isFavorite || false);
   const [isPreview, setIsPreview] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 

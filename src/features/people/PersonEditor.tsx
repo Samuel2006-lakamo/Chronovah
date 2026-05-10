@@ -5,7 +5,6 @@ import {
   X,
   Save,
   User,
-  Heart,
   Mail,
   Phone,
   Calendar,
@@ -62,7 +61,7 @@ export default function PersonEditor({
   const [notes, setNotes] = useState(person?.notes || "");
   const [tags, setTags] = useState<string[]>(person?.tags || []);
   const [tagInput, setTagInput] = useState("");
-  const [isFavorite, setIsFavorite] = useState(person?.isFavorite || false);
+  const [isFavorite] = useState(person?.isFavorite || false);
   const [socialMedia, setSocialMedia] = useState(person?.socialMedia || {});
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showSocial, setShowSocial] = useState(false);
