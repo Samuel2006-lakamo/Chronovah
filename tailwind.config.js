@@ -9,7 +9,7 @@ export default {
         xs: "475px",
       },
       fontFamily: {
-        display: ["Bricolage Grotesque", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Instrumental Sans", "ui-sans-serif", "system-ui", "sans-serif"],
         ui: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
         sans: ["Inter", "Plus Jakarta Sans", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],

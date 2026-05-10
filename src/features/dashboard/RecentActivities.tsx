@@ -32,14 +32,14 @@ function RecentActivities() {
 
   return (
     <section aria-label="Recent activity">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-primary">Recent Activity</h2>
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <h2 className="text-sm sm:text-base font-semibold text-primary">Recent Activity</h2>
       </div>
 
       <div className="bg-card border border-default rounded-xl overflow-hidden">
         {activities.length === 0 ? (
-          <div className="px-4 py-10 text-center">
-            <p className="text-sm text-muted">No activity yet. Start by creating a note or journal entry.</p>
+          <div className="px-3 sm:px-4 py-6 sm:py-10 text-center">
+            <p className="text-xs sm:text-sm text-muted">No activity yet. Start by creating a note or journal entry.</p>
           </div>
         ) : (
           <ul className="divide-y divide-[var(--color-border)]">
@@ -57,24 +57,24 @@ function RecentActivities() {
                 >
                   <button
                     onClick={() => navigate(destination)}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-default transition-colors text-left group"
+                    className="w-full flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2.5 sm:py-3 hover:bg-default transition-colors text-left group"
                   >
                     {/* Icon badge */}
-                    <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${cfg.bg}`}>
-                      <Icon size={15} className={cfg.color} />
+                    <div className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center ${cfg.bg}`}>
+                      <Icon size={14} className={cfg.color} />
                     </div>
 
                     {/* Text */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-primary truncate leading-snug">
+                      <p className="text-xs sm:text-sm font-medium text-primary truncate leading-snug">
                         {item.title || "Untitled"}
                       </p>
                       <p className="text-xs text-muted mt-0.5">{cfg.label}</p>
                     </div>
 
                     {/* Time + arrow */}
-                    <div className="flex-shrink-0 flex items-center gap-2">
-                      <span className="text-xs text-muted tabular-nums">{timeAgo(item.createdAt)}</span>
+                    <div className="flex-shrink-0 flex items-center gap-1.5 sm:gap-2">
+                      <span className="text-xs text-muted tabular-nums hidden sm:inline">{timeAgo(item.createdAt)}</span>
                       <ArrowRight
                         size={14}
                         className="text-muted opacity-0 group-hover:opacity-100 transition-opacity"

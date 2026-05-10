@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Moon,
-  Sun,
+  
   Search,
   Box,
   Menu,
@@ -21,6 +20,8 @@ import {
   Sidebar,
   Zap,
   Crown,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useSidebar } from "../hooks/useSidebar";
@@ -36,7 +37,7 @@ import UserAvatar from "./UserAvatar";
 function Header() {
   const { openSearch, setOpenSearch } = useSearch();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isOpen } = useSidebar();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -45,7 +46,7 @@ function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { isOpen } = useSidebar();
+  
   const { isProActive } = useSubscriptionStore();
 
   // Ref for the profile dropdown container — used to detect outside clicks
@@ -133,13 +134,13 @@ function Header() {
           fixed top-0 left-0 right-0 z-50 transition-all duration-300
           ${
             isScrolled
-              ? "bg-default/95 backdrop-blur-md shadow-medium border-b border-default/50"
-              : "bg-default border-b border-default"
+              ? "bg-default/95 backdrop-blur-md shadow-medium "
+              : "bg-header  border-default"
           }
         `}
       >
         {/* Left — Logo & toggles */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center sm:gap-2">
           {isAuthenticated && (
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -147,9 +148,11 @@ function Header() {
               className="p-2 rounded-lg hover:bg-default transition-colors md:hidden"
               aria-label="Toggle menu"
             >
-              {isMobileMenuOpen
-                ? <X size={20} className="text-muted" />
-                : <Menu size={20} className="text-muted" />}
+              {isMobileMenuOpen ? (
+                <X size={20} className="text-muted" />
+              ) : (
+                <Menu size={20} className="text-muted" />
+              )}
             </motion.button>
           )}
 
@@ -158,10 +161,14 @@ function Header() {
             className="flex items-center gap-2 group"
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-primary-500 rounded-xl blur-md opacity-60 group-hover:opacity-100 transition-opacity" />
-              <Box className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-xl text-white bg-primary-500 p-1.5" />
+              <Box
+                size={14}
+                className="relative w-8 h-8 sm:w-10 sm:h-10  text-primary p-1.5"
+              />
             </div>
-            <span className="font-bold text-base sm:text-lg text-primary">Chronovah</span>
+            <span className="font-bold ml-[-6px] text-base sm:text-lg text-primary">
+              Chronovah
+            </span>
           </NavLink>
 
           {isAuthenticated && (
@@ -186,27 +193,35 @@ function Header() {
         <div className="flex items-center gap-1 sm:gap-2">
           {isAuthenticated && <SyncIndicator />}
 
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={toggleDarkMode}
-            className="p-2 rounded-lg hover:bg-default transition-colors"
-            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {isDarkMode
-              ? <Sun size={18} className="text-accent-yellow" />
-              : <Moon size={18} className="text-muted" />}
-          </motion.button>
-
-          {isAuthenticated ? (
-            <>
-              <motion.button
+          {isAuthenticated && ( <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setOpenSearch(true)}
                 className="md:hidden p-2 rounded-lg hover:bg-default transition-colors"
                 aria-label="Search"
               >
                 <Search size={18} className="text-muted" />
-              </motion.button>
+              </motion.button> )}
+          <motion.button
+            role="switch"
+            aria-checked={isDarkMode}
+            aria-label={
+              isDarkMode ? "Switch to light mode" : "Switch to dark mode"
+            }
+            
+            onClick={toggleDarkMode}
+          
+          >
+    {isDarkMode ? (
+            <Sun size={18} className="text-accent-yellow" />
+          ) : (
+            <Moon size={18} className="text-muted" />
+          )}  
+            
+          </motion.button>
+
+          {isAuthenticated ? (
+            <>
+             
 
               {/* Profile dropdown */}
               <div className="relative" ref={profileMenuRef}>
@@ -240,7 +255,9 @@ function Header() {
                       className="absolute right-0 mt-2 w-48 bg-card rounded-xl shadow-hard border border-default overflow-hidden z-50"
                     >
                       <div className="px-4 py-3 border-b border-default">
-                        <p className="text-sm font-semibold text-primary truncate">{name}</p>
+                        <p className="text-sm font-semibold text-primary truncate">
+                          {name}
+                        </p>
                         <p className="text-xs text-muted truncate">{email}</p>
                       </div>
                       <div className="p-1">
@@ -323,7 +340,9 @@ function Header() {
                 <div className="p-4 border-b border-default">
                   <div className="flex items-center gap-2">
                     <Box className="w-8 h-8 rounded-xl text-white bg-primary-500 p-1.5" />
-                    <span className="font-bold text-lg text-primary">Chronovah</span>
+                    <span className="font-bold text-lg text-primary">
+                      Chronovah
+                    </span>
                   </div>
                 </div>
 
@@ -355,19 +374,28 @@ function Header() {
                     className="mx-3 mb-4 p-4 rounded-xl border-2"
                     style={{
                       backgroundColor: "var(--color-card)",
-                      borderColor: isProActive ? "var(--color-primary-500)" : "var(--color-border)",
+                      borderColor: isProActive
+                        ? "var(--color-primary-500)"
+                        : "var(--color-border)",
                     }}
                   >
                     <div className="flex items-center gap-2 mb-3">
                       {isProActive ? (
                         <>
-                          <Crown size={16} style={{ color: "var(--color-primary-500)" }} />
-                          <span className="text-xs font-bold text-primary">Pro Active</span>
+                          <Crown
+                            size={16}
+                            style={{ color: "var(--color-primary-500)" }}
+                          />
+                          <span className="text-xs font-bold text-primary">
+                            Pro Active
+                          </span>
                         </>
                       ) : (
                         <>
                           <Zap size={16} className="text-muted" />
-                          <span className="text-xs font-bold text-primary">Free Plan</span>
+                          <span className="text-xs font-bold text-primary">
+                            Free Plan
+                          </span>
                         </>
                       )}
                     </div>
@@ -399,7 +427,9 @@ function Header() {
                       textSize="text-sm"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-primary truncate">{name}</p>
+                      <p className="text-sm font-semibold text-primary truncate">
+                        {name}
+                      </p>
                       <p className="text-xs text-muted truncate">{email}</p>
                     </div>
                   </div>

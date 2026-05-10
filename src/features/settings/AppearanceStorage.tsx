@@ -4,14 +4,20 @@ import { useState, useEffect } from "react";
 import { useStorage } from "../../hooks/useStorage";
 import ProgressInput from "./ProgressInput";
 import { THEMES, getStoredTheme, setTheme, getThemeColor, type Theme } from "../../lib/theme";
+import { HEADING_FONTS, BODY_FONTS, FONT_PRESETS, getStoredFont, setFont, type HeadingFont, type BodyFont } from "../../lib/font";
 
 export default function AppearanceStorage() {
   const { toggleDarkMode, isDarkMode } = useDarkMode();
   const { storageUsed, usedValue, max } = useStorage();
   const [currentTheme, setCurrentTheme] = useState<Theme>('ocean');
+  const [currentHeadingFont, setCurrentHeadingFont] = useState<HeadingFont>('manrope');
+  const [currentBodyFont, setCurrentBodyFont] = useState<BodyFont>('inter');
 
   useEffect(() => {
     setCurrentTheme(getStoredTheme());
+    const font = getStoredFont();
+    setCurrentHeadingFont(font.heading);
+    setCurrentBodyFont(font.body);
   }, []);
 
   const handleThemeChange = (theme: Theme) => {
@@ -19,8 +25,18 @@ export default function AppearanceStorage() {
     setTheme(theme);
   };
 
+  const handleHeadingFontChange = (font: HeadingFont) => {
+    setCurrentHeadingFont(font);
+    setFont(font, currentBodyFont);
+  };
+
+  const handleBodyFontChange = (font: BodyFont) => {
+    setCurrentBodyFont(font);
+    setFont(currentHeadingFont, font);
+  };
+
   return (
-    <div className="bg-default mb-4 rounded-2xl p-4 sm:p-5 lg:p-6 shadow space-y-5 sm:space-y-6">
+    <div className="bg-default mb-4 rounded-2xl p-5 shadow space-y-6">
       {/* Header */}
       <h2 className="text-lg sm:text-xl font-semibold text-primary">
         Appearance & Storage
@@ -74,6 +90,74 @@ export default function AppearanceStorage() {
               )}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Font Selection */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-primary">Fonts</h3>
+        
+        {/* Font Presets */}
+        <div className="space-y-2">
+          <label className="text-xs text-muted">Quick Presets</label>
+          <select
+            value={`${currentHeadingFont}-${currentBodyFont}`}
+            onChange={(e) => {
+              const [heading, body] = e.target.value.split('-') as [HeadingFont, BodyFont];
+              setCurrentHeadingFont(heading);
+              setCurrentBodyFont(body);
+              setFont(heading, body);
+            }}
+            className="w-full px-3 py-2 bg-card border border-default rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary"
+          >
+            {FONT_PRESETS.map((preset) => (
+              <option key={`${preset.heading}-${preset.body}`} value={`${preset.heading}-${preset.body}`}>
+                {preset.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Heading Font */}
+        <div className="space-y-2">
+          <label className="text-xs text-muted">Heading Font</label>
+          <select
+            value={currentHeadingFont}
+            onChange={(e) => handleHeadingFontChange(e.target.value as HeadingFont)}
+            className="w-full px-3 py-2 bg-card border border-default rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary"
+          >
+            {HEADING_FONTS.map((font) => (
+              <option key={font.value} value={font.value}>
+                {font.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Body Font */}
+        <div className="space-y-2">
+          <label className="text-xs text-muted">Body Font</label>
+          <select
+            value={currentBodyFont}
+            onChange={(e) => handleBodyFontChange(e.target.value as BodyFont)}
+            className="w-full px-3 py-2 bg-card border border-default rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary"
+          >
+            {BODY_FONTS.map((font) => (
+              <option key={font.value} value={font.value}>
+                {font.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Font Preview */}
+        <div className="bg-card border border-default rounded-lg p-3 space-y-2">
+          <p style={{ fontFamily: `var(--font-heading-${currentHeadingFont})` }} className="text-sm font-bold">
+            This is your heading font
+          </p>
+          <p style={{ fontFamily: `var(--font-body-${currentBodyFont})` }} className="text-xs">
+            This is your body font. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </p>
         </div>
       </div>
 

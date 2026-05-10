@@ -37,17 +37,17 @@ function ItemCard({ title, item, date, id }: ItemCardProps) {
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => navigate(destination)}
-      className="w-full text-left bg-card border border-default rounded-xl p-4 hover:shadow-medium transition-all group cursor-pointer"
+      className="w-full text-left bg-card border border-default rounded-xl p-2.5 sm:p-3 md:p-4 hover:shadow-medium transition-all group cursor-pointer"
     >
-      <div className="flex items-start gap-3">
-        <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${cfg.bg}`}>
-          <Icon size={15} className={cfg.color} />
+      <div className="flex items-start gap-2 sm:gap-3">
+        <div className={`flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center ${cfg.bg}`}>
+          <Icon size={13} className={cfg.color} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-primary truncate leading-snug">
+          <p className="text-xs sm:text-sm font-medium text-primary truncate leading-snug" style={{ fontFamily: 'var(--font-heading)' }}>
             {title || "Untitled"}
           </p>
-          <p className="text-xs text-muted mt-1">{formattedDate}</p>
+          <p className="text-xs text-muted mt-0.5 sm:mt-1">{formattedDate}</p>
         </div>
         <ArrowRight
           size={14}

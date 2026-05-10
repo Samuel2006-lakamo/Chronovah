@@ -463,37 +463,21 @@ export default function PersonEditor({
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 p-3 sm:p-4 border-t border-default">
+        <div className="flex items-center justify-end gap-2 p-3 sm:p-4 border-t border-default">
           <button
-            onClick={() => setIsFavorite(!isFavorite)}
-            className={`flex items-center justify-center sm:justify-start gap-2 px-3 py-2 rounded-lg transition-colors ${
-              isFavorite
-                ? "text-red-500 bg-red-500/10"
-                : "text-muted hover:text-red-500"
-            }`}
+            onClick={onClose}
+            className="px-4 py-2 text-muted hover:text-primary transition-colors text-sm"
           >
-            <Heart size={16} fill={isFavorite ? "currentColor" : "none"} />
-            <span className="text-sm">
-              {isFavorite ? "Favorited" : "Add to favorites"}
-            </span>
+            Cancel
           </button>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onClose}
-              className="flex-1 sm:flex-none px-4 py-2 text-muted hover:text-primary transition-colors text-sm"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={!isFormValid}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              <Save size={16} />
-              <span>Save Person</span>
-            </button>
-          </div>
+          <button
+            onClick={handleSubmit}
+            disabled={!isFormValid}
+            className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          >
+            <Save size={16} />
+            <span>Save Person</span>
+          </button>
         </div>
       </motion.div>
     </motion.div>

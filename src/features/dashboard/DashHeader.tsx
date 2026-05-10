@@ -20,7 +20,7 @@ function DashHeader() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="bg-card rounded-xl shadow-sm p-5 md:p-6 flex justify-between flex-col sm:flex-row items-start sm:items-center gap-4 border border-default"
+      className="bg-card rounded-xl shadow-sm p-3 sm:p-4 md:p-5 flex justify-between flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 border border-default"
       aria-label="Dashboard header"
     >
       <div className="flex items-center gap-4">

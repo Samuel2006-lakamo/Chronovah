@@ -17,7 +17,7 @@ function DashStat() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted font-medium">{stat.title}</p>
-              <p className="text-2xl font-bold text-primary mt-1 tabular-nums">
+              <p className="text-2xl font-bold text-primary mt-1 tabular-nums" style={{ fontFamily: 'var(--font-heading)' }}>
                 {stat.value}
               </p>
             </div>

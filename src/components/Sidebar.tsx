@@ -17,7 +17,7 @@ function Sidebar() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const { isProActive } = useSubscriptionStore();
-
+  const { setIsOpen } = useSidebar();
   // Get real counts from Dexie
   const journalCount = useLiveQuery(
     async () => (user ? (await db.journal.where('userId').equals(user.id).count()) : 0),
@@ -36,12 +36,18 @@ function Sidebar() {
 
   return (
     <aside
+      onMouseEnter={() => {
+        setIsOpen(true)
+      }}
+      onMouseLeave={() => {
+        setIsOpen(false)
+      }}
       className={`${
         isOpen ? "w-[260px]" : "w-20"
-      } border-r top-15 border-t-0 fixed left-0 bottom-0 min-h-screen flex flex-col transition-all duration-300`}
+      } border-r top-15 border-t-0 fixed left-0 bottom-0 min-h-screen flex flex-col transition-all duration-500 bg-header`}
       style={{
-        backgroundColor: "var(--color-bg)",
         borderColor: "var(--color-border)",
+        fontFamily: "var(--font-heading)",
       }}
     >
       {/* Navigation */}
@@ -93,7 +99,7 @@ function Sidebar() {
                 )}
               </div>
               {isOpen && (
-                <div className="flex-1 flex items-center justify-between">
+                <div className="flex-1 flex transition-all duration-500 items-center justify-between">
                   <span className="text-sm font-medium">{item.name}</span>
                   {item.name === "Journal" && journalCount > 0 && (
                     <span

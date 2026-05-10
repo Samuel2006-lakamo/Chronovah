@@ -12,7 +12,7 @@ function AppLayout() {
     <div
       className={` ${
         isOpen ? "md:grid-cols-[260px_1fr]" : " md:grid-cols-[80px_1fr]"
-      } min-h-screen grid  dark:bg-gray-950 grid-cols-1 grid-rows-[auto_1fr]`}
+      } min-h-screen grid bg-default  grid-cols-1 grid-rows-[auto_1fr]`}
     >
       {/* Header */}
       <header className="col-span-full">
@@ -25,16 +25,16 @@ function AppLayout() {
       </aside>
 
       {/* Main content */}
-      <main className="bg-gray-100 dark:bg-gray-950  md:p-6 overflow-y-auto">
+      <main className="bg-gray-100 bg-default md:p-6 overflow-y-auto">
         <div className=" mx-auto flex flex-col gap-6">
           <Outlet />
         </div>
       </main>
-{/* 
+      {/* 
        Mobile bottom nav */}
       <div className="md:hidden fixed bottom-0 left-0 w-full">
         <BottomNav />
-      </div> 
+      </div>
 
       {/* Theme Quick Switcher */}
       <ThemeQuickSwitcher />

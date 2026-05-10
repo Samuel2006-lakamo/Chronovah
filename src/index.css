@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+/* Google Fonts - Landing Page Heading */
+@import url("https://fonts.googleapis.com/css2?family=Instrumental+Sans:wght@400;600;700&display=swap");
+
+/* Google Fonts - Heading Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap");
+
+/* Google Fonts - Body Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
+
 /* Dark mode variant */
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -14,6 +29,24 @@
   --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   /* Code in notes & markdown */
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* ===== HEADING FONTS ===== */
+  --font-heading-fraunces: "Fraunces", Georgia, serif;
+  --font-heading-bricolage: "Bricolage Grotesque", sans-serif;
+  --font-heading-playfair: "Playfair Display", Georgia, serif;
+  --font-heading-space: "Space Grotesk", sans-serif;
+  --font-heading-sora: "Sora", sans-serif;
+  --font-heading-manrope: "Manrope", sans-serif;
+  
+  /* ===== BODY FONTS ===== */
+  --font-body-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body-manrope: "Manrope", sans-serif;
+  --font-body-dm: "DM Sans", sans-serif;
+  --font-body-fraunces: "Fraunces", Georgia, serif;
+  
+  /* ===== ACTIVE FONT VARIABLES (dynamic) ===== */
+  --font-heading: "Manrope", sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* ===== COLOR VARIABLES ===== */
   /* Primary palette */
@@ -42,20 +75,48 @@
   --color-secondary-900: #581c87;
   --color-secondary-950: #3b0764;
 
-  /* Light theme (default) */
-  --color-bg: #ffffff;
-  --color-card: #f9fafb;
-  --color-border: #e5e7eb;
-  --color-text: #111827;
-  --color-text-muted: #6b7280;
+  /* ===== LIGHT MODE COLORS ===== */
+  /* Deep: Sidebar / nav */
+  --color-bg-light: #F7F4F0;
+  --color-header-light: #EDEAE4;
+  /* Surface: Cards / panels */
+  --color-card-light: #FFFFFF;
+  /* Raised: Hover state */
+  --color-raised-light: #F0EDE8;
+  /* Border: Dividers / lines */
+  --color-border-light: #D8D3CB;
+  /* Text: warm dark, not pure black */
+  --color-text-primary-light: #1A1814;
+  --color-text-secondary-light: #3D3830;
+  --color-text-muted-light: #7A6F62;
+  --color-text-disabled-light: #B0A89E;
 
-  /* Dark theme (override in .dark class) */
-  --color-bg-dark: #0b1120;
-  --color-card-dark: #1e293b;
-  --color-border-dark: #334155;
-  --color-text-dark: #f1f5f9;
-  --color-text-muted-dark: #94a3b8;
+  /* ===== DARK MODE COLORS ===== */
+  /* Deep: Sidebar / nav */
+  --color-bg-dark: #191919;
+  --color-header-dark: #111111;
+  /* Surface: Cards / panels */
+  --color-card-dark: #242424;
+  /* Raised: Hover / elevated */
+  --color-raised-dark: #2F2F2F;
+  /* Border: Dividers / lines */
+  --color-border-dark: #3A3A3A;
+  /* Text: pure neutral */
+  --color-text-primary-dark: #E8E8E8;
+  --color-text-secondary-dark: #AFAFAF;
+  --color-text-muted-dark: #888888;
+  --color-text-disabled-dark: #444444;
 
+  /* ===== SEMANTIC COLOR TOKENS (Light mode defaults) ===== */
+  --color-bg: var(--color-bg-light);
+  --color-header: var(--color-header-light);
+  --color-card: var(--color-card-light);
+  --color-raised: var(--color-raised-light);
+  --color-border: var(--color-border-light);
+  --color-text: var(--color-text-primary-light);
+  --color-text-secondary: var(--color-text-secondary-light);
+  --color-text-muted: var(--color-text-muted-light);
+  --color-text-disabled: var(--color-text-disabled-light);
   /* Feature colors - Places */
   --color-places-light: #3b82f6;
   --color-places-dark: #60a5fa;
@@ -107,11 +168,14 @@
 /* ===== DARK MODE OVERRIDES ===== */
 .dark {
   --color-bg: var(--color-bg-dark);
+  --color-header: var(--color-header-dark);
   --color-card: var(--color-card-dark);
+  --color-raised: var(--color-raised-dark);
   --color-border: var(--color-border-dark);
-  --color-text: var(--color-text-dark);
+  --color-text: var(--color-text-primary-dark);
+  --color-text-secondary: var(--color-text-secondary-dark);
   --color-text-muted: var(--color-text-muted-dark);
-  
+  --color-text-disabled: var(--color-text-disabled-dark);
   /* Feature backgrounds in dark mode */
   --color-places-bg: var(--color-places-bg-dark);
   --color-notes-bg: var(--color-notes-bg-dark);
@@ -249,16 +313,67 @@
   --color-primary-400: #93c5fd;
 }
 
+/* ===== FONT PRESETS ===== */
+/* Default font preset - Manrope heading + Inter body */
+:root {
+  --font-heading: var(--font-heading-manrope);
+  --font-body: var(--font-body-inter);
+}
+
+/* Fraunces Serif + Manrope */
+.font-preset-fraunces-serif {
+  --font-heading: var(--font-heading-fraunces);
+  --font-body: var(--font-body-fraunces);
+}
+
+/* Bricolage Grotesque + DM Sans */
+.font-preset-bricolage {
+  --font-heading: var(--font-heading-bricolage);
+  --font-body: var(--font-body-dm);
+}
+
+/* Playfair Display + Manrope */
+.font-preset-playfair {
+  --font-heading: var(--font-heading-playfair);
+  --font-body: var(--font-body-manrope);
+}
+
+/* Space Grotesk + Inter */
+.font-preset-space {
+  --font-heading: var(--font-heading-space);
+  --font-body: var(--font-body-inter);
+}
+
+/* Sora + DM Sans */
+.font-preset-sora {
+  --font-heading: var(--font-heading-sora);
+  --font-body: var(--font-body-dm);
+}
+
+/* Manrope + Manrope (all Manrope) */
+.font-preset-manrope {
+  --font-heading: var(--font-heading-manrope);
+  --font-body: var(--font-body-manrope);
+}
+
+/* Custom combination - Heading and Body independent */
+.font-heading-fraunces { --font-heading: var(--font-heading-fraunces); }
+.font-heading-bricolage { --font-heading: var(--font-heading-bricolage); }
+.font-heading-playfair { --font-heading: var(--font-heading-playfair); }
+.font-heading-space { --font-heading: var(--font-heading-space); }
+.font-heading-sora { --font-heading: var(--font-heading-sora); }
+.font-heading-manrope { --font-heading: var(--font-heading-manrope); }
+
+.font-body-inter { --font-body: var(--font-body-inter); }
+.font-body-manrope { --font-body: var(--font-body-manrope); }
+.font-body-dm { --font-body: var(--font-body-dm); }
+.font-body-fraunces { --font-body: var(--font-body-fraunces); }
+
 /* ===== UTILITY LAYER ===== */
 @layer utilities {
   /* ===== TYPOGRAPHY UTILITIES ===== */
   
   /* UI Font (Inter) - for components, buttons, labels, navigation */
-  .font-display {
-    font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-    font-optical-sizing: auto;
-  }
-
   .font-ui-xs {
     font-family: var(--font-ui);
     font-size: 0.75rem;
@@ -369,7 +484,9 @@
   .bg-primary {
     background-color: var(--color-primary-500);
   }
-
+.bg-header{
+  background-color: var(--color-header);
+}
   .hover\:bg-primary-hover:hover {
     background-color: var(--color-primary-hover);
   }
@@ -597,7 +714,7 @@
   }
   
   body {
-    font-family: var(--font-ui);
+    font-family: var(--font-body);
     font-size: 1rem;
     line-height: 1.5rem;
     font-weight: 400;
@@ -605,7 +722,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-ui);
+    font-family: var(--font-heading);
     font-weight: 700;
   }
   
@@ -657,9 +774,9 @@
     font-weight: 400;
   }
   
-  /* Content areas use serif font */
+  /* Content areas use body font */
   .content-area, .markdown-content, [data-content="true"] {
-    font-family: var(--font-content);
+    font-family: var(--font-body);
     font-size: 1rem;
     line-height: 1.7;
     font-weight: 400;
