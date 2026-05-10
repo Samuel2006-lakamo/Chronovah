@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Sitemap: https://chronovah.xyz/sitemap.xml
+
 # Block authenticated app routes — no value for crawlers
 Disallow: /dashboard
 Disallow: /notes
