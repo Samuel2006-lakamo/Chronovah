@@ -2,16 +2,19 @@
  * useImageManager.ts
  *
  * Core hook for the image upload system. Handles the full lifecycle:
- *   1. File validation
- *   2. Frontend compression (browser-image-compression)
- *   3. Backend signature request (validates limits)
- *   4. Direct Cloudinary upload
- *   5. Backend confirm (persists Image_Record + increments counter)
- *   6. Optimistic UI updates with server reconciliation
- *   7. Soft delete / restore / permanent delete
+ *   1. Offline detection — blocks upload with a clear message
+ *   2. File validation
+ *   3. Frontend compression (browser-image-compression)
+ *   4. Backend signature request (validates limits server-side)
+ *   5. Direct Cloudinary upload
+ *   6. Backend confirm (persists Image_Record + increments counter)
+ *   7. Optimistic UI updates with server reconciliation
+ *   8. Soft delete / restore / permanent delete
+ *   9. Session cancel cleanup — permanently deletes images uploaded in the
+ *      current editor session if the user cancels without saving
  */
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import imageCompression from "browser-image-compression";
 import { useSubscriptionStore } from "../store/subscriptionStore";
 import {
@@ -30,7 +33,7 @@ import type {
   ImageErrorCode,
 } from "../type/ImageType";
 
-// ─── Compression options (mandatory per requirements) ─────────────────────────
+// ─── Compression options ──────────────────────────────────────────────────────
 const COMPRESSION_OPTIONS = {
   maxSizeMB: 1,
   maxWidthOrHeight: 1920,
@@ -38,51 +41,41 @@ const COMPRESSION_OPTIONS = {
   preserveExif: false,
 };
 
-// ─── File validation limits ───────────────────────────────────────────────────
+// ─── File validation ──────────────────────────────────────────────────────────
 const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB pre-compression
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface ImageManagerState {
-  /** Active (non-soft-deleted) images for this record */
   images: ImageRecord[];
-  /** Current upload stage for progress indicator */
   uploadStage: UploadStage;
-  /** Whether an upload is in progress */
   isUploading: boolean;
-  /** Human-readable error message */
   error: string | null;
-  /** Typed error code for programmatic handling */
   errorCode: ImageErrorCode | null;
-  /** Number of active images on this record */
   perRecordCount: number;
-  /** Max images allowed per record for this user's plan */
   perRecordLimit: number;
-  /** Whether this record has reached its per-record limit */
   isAtPerRecordLimit: boolean;
-  /** User's total images uploaded across all records */
   globalCount: number;
-  /** Global limit (30 for free, null for pro) */
   globalLimit: number | null;
-  /** Whether the user has hit the global free limit */
   isAtGlobalLimit: boolean;
-  /** User's plan */
   plan: "free" | "pro";
+  /** True when the browser has no network connection */
+  isOffline: boolean;
 }
 
 export interface UseImageManagerReturn extends ImageManagerState {
-  /** Upload a new image file */
   upload: (file: File) => Promise<void>;
-  /** Soft-delete an image (moves to trash, 30-day restore window) */
   softDelete: (imageId: string) => Promise<void>;
-  /** Restore a soft-deleted image */
   restore: (imageId: string) => Promise<void>;
-  /** Permanently delete an image from Cloudinary + DB */
   permanentDelete: (imageId: string) => Promise<void>;
-  /** Clear the current error */
   clearError: () => void;
-  /** Reload images from server */
   refresh: () => Promise<void>;
+  /**
+   * Call when the editor is cancelled without saving.
+   * Permanently deletes any images uploaded during this session so they
+   * don't become orphans in Cloudinary or count against the user's limit.
+   */
+  cancelSession: () => Promise<void>;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -98,25 +91,43 @@ export function useImageManager(
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<ImageErrorCode | null>(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
-  // Usage counters — seeded from subscription store, reconciled with server
+  // Track image IDs uploaded in this editor session for cancel cleanup
+  const sessionImageIds = useRef<Set<string>>(new Set());
+
+  // Seed counters from subscription store; reconciled with server on load
   const effectivePlan: "free" | "pro" =
     isProActive || storePlan === "pro" ? "pro" : "free";
-  const defaultPerRecordLimit = effectivePlan === "pro" ? 5 : 2;
-  const defaultGlobalLimit = effectivePlan === "free" ? 30 : null;
 
-  const [perRecordLimit, setPerRecordLimit] = useState(defaultPerRecordLimit);
+  const [perRecordLimit, setPerRecordLimit] = useState(
+    effectivePlan === "pro" ? 5 : 2
+  );
   const [globalCount, setGlobalCount] = useState(0);
-  const [globalLimit, setGlobalLimit] = useState<number | null>(defaultGlobalLimit);
+  const [globalLimit, setGlobalLimit] = useState<number | null>(
+    effectivePlan === "free" ? 30 : null
+  );
   const [plan, setPlan] = useState<"free" | "pro">(effectivePlan);
 
-  // Derived
   const perRecordCount = images.length;
   const isAtPerRecordLimit = perRecordCount >= perRecordLimit;
   const isAtGlobalLimit =
     plan === "free" && globalLimit !== null && globalCount >= globalLimit;
 
-  // ─── Load images + usage on mount ──────────────────────────────────────────
+  // ─── Online / offline listeners ───────────────────────────────────────────
+
+  useEffect(() => {
+    const onOnline = () => setIsOffline(false);
+    const onOffline = () => setIsOffline(true);
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+    };
+  }, []);
+
+  // ─── Load images + usage on mount ────────────────────────────────────────
 
   const refresh = useCallback(async () => {
     if (!recordId) return;
@@ -139,36 +150,47 @@ export function useImageManager(
     refresh();
   }, [refresh]);
 
-  // ─── Upload ────────────────────────────────────────────────────────────────
+  // ─── Upload ───────────────────────────────────────────────────────────────
 
   const upload = useCallback(
     async (file: File) => {
       setError(null);
       setErrorCode(null);
 
-      // ── Validate file type ──
+      // Block immediately if offline (best-effort — actual network errors are
+      // caught per-stage below with more reliable detection)
+      if (!navigator.onLine) {
+        setError(
+          "You're offline right now. Photo uploads need an internet connection — your other changes will still save. Come back online and edit this entry to add photos."
+        );
+        setErrorCode("network_error");
+        return;
+      }
+
       if (!file.type.startsWith("image/")) {
-        setError("Please select a valid image file");
+        setError("Please select a valid image file (JPG, PNG, or WebP)");
         setErrorCode("invalid_file");
         return;
       }
 
-      // ── Validate file size (pre-compression) ──
       if (file.size > MAX_FILE_SIZE_BYTES) {
-        setError("File is too large. Maximum size is 50MB");
+        setError("That file is too large. Please choose an image under 50MB");
         setErrorCode("file_too_large");
         return;
       }
 
-      // ── Client-side limit guard (optimistic, server is source of truth) ──
       if (isAtPerRecordLimit) {
-        setError(`Maximum images reached for this entry (${perRecordCount}/${perRecordLimit})`);
+        setError(
+          `You've reached the photo limit for this entry (${perRecordCount}/${perRecordLimit})`
+        );
         setErrorCode("per_record_limit_reached");
         return;
       }
 
       if (isAtGlobalLimit) {
-        setError("You've reached your free image limit. Upgrade to Pro for unlimited images");
+        setError(
+          "You've used all 30 free photo slots. Upgrade to Pro for unlimited photos"
+        );
         setErrorCode("global_limit_reached");
         return;
       }
@@ -176,50 +198,68 @@ export function useImageManager(
       setIsUploading(true);
 
       try {
-        // ── Stage 1: Compress ──
+        // Stage 1 — compress
         setUploadStage("compressing");
         let compressedFile: File;
         try {
           compressedFile = await imageCompression(file, COMPRESSION_OPTIONS);
         } catch {
-          // If compression fails, fall back to original file
-          console.warn("[useImageManager] Compression failed, using original file");
+          console.warn("[useImageManager] Compression failed, using original");
           compressedFile = file;
         }
 
-        // ── Stage 2: Get signature (validates limits server-side) ──
+        // Stage 2 — get signed upload token (validates limits server-side)
         setUploadStage("uploading");
         let signatureData;
         try {
           signatureData = await getImageSignature(recordId, recordType);
         } catch (err: unknown) {
-          const axiosErr = err as { response?: { data?: { errors?: Array<{ code: string }>; message?: string } } };
+          const axiosErr = err as {
+            response?: {
+              data?: {
+                errors?: Array<{ code: string }>;
+                message?: string;
+              };
+            };
+            code?: string;
+            message?: string;
+          };
           const code = axiosErr?.response?.data?.errors?.[0]?.code;
           const message = axiosErr?.response?.data?.message;
+          // Axios network errors have no response and code "ERR_NETWORK" or message "Network Error"
+          const isNetworkError =
+            !axiosErr?.response ||
+            axiosErr?.code === "ERR_NETWORK" ||
+            axiosErr?.message === "Network Error" ||
+            !navigator.onLine;
 
           if (code === "per_record_limit_reached") {
-            setError("Maximum images reached for this entry");
+            setError("You've reached the photo limit for this entry");
             setErrorCode("per_record_limit_reached");
           } else if (code === "global_limit_reached") {
-            setError("You've reached your free image limit. Upgrade to Pro for unlimited images");
+            setError(
+              "You've used all 30 free photo slots. Upgrade to Pro for unlimited photos"
+            );
             setErrorCode("global_limit_reached");
-          } else if (!navigator.onLine) {
-            setError("No internet connection. Please check your network and try again.");
+          } else if (isNetworkError) {
+            setError(
+              "You're offline right now. Photo uploads need an internet connection — your other changes will still save. Come back online and edit this entry to add photos."
+            );
             setErrorCode("network_error");
           } else {
-            setError(message || "Failed to start upload. Please try again.");
+            setError(message || "Couldn't start the upload. Please try again.");
             setErrorCode("upload_failed");
           }
           return;
         }
 
-        // Optimistic counter update from signature response
+        // Optimistic counter update
         setGlobalCount(signatureData.globalCount + 1);
         setPerRecordLimit(signatureData.perRecordLimit);
         setGlobalLimit(signatureData.globalLimit);
         setPlan(signatureData.plan);
 
-        // ── Stage 3: Upload directly to Cloudinary ──
+        // Stage 3 — upload directly to Cloudinary
         const formData = new FormData();
         formData.append("file", compressedFile);
         formData.append("api_key", signatureData.apiKey);
@@ -228,23 +268,30 @@ export function useImageManager(
         formData.append("folder", signatureData.folder);
         formData.append("public_id", signatureData.publicId);
 
-        let cloudinaryResult: { public_id: string; url: string; secure_url: string };
+        let cloudinaryResult: {
+          public_id: string;
+          url: string;
+          secure_url: string;
+        };
         try {
           const cloudRes = await fetch(
             `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`,
             { method: "POST", body: formData }
           );
-
           if (!cloudRes.ok) {
             throw new Error(`Cloudinary upload failed: ${cloudRes.status}`);
           }
-
           cloudinaryResult = await cloudRes.json();
-        } catch {
-          // Revert optimistic counter update
+        } catch (fetchErr: unknown) {
           setGlobalCount((c) => Math.max(0, c - 1));
-          if (!navigator.onLine) {
-            setError("No internet connection. Please check your network and try again.");
+          // TypeError "Failed to fetch" = network unreachable (offline or no internet)
+          const isNetworkError =
+            fetchErr instanceof TypeError ||
+            !navigator.onLine;
+          if (isNetworkError) {
+            setError(
+              "You're offline right now. Photo uploads need an internet connection — your other changes will still save. Come back online and edit this entry to add photos."
+            );
             setErrorCode("network_error");
           } else {
             setError("Upload failed. Please try again.");
@@ -253,7 +300,7 @@ export function useImageManager(
           return;
         }
 
-        // ── Stage 4: Confirm with backend (persists record + increments counter) ──
+        // Stage 4 — confirm with backend (persists record + increments counter)
         setUploadStage("saving");
         let imageRecord: ImageRecord;
         try {
@@ -265,29 +312,36 @@ export function useImageManager(
             recordType,
           });
         } catch (err: unknown) {
-          // Revert optimistic counter update
           setGlobalCount((c) => Math.max(0, c - 1));
-          const axiosErr = err as { response?: { data?: { errors?: Array<{ code: string }>; message?: string } } };
+          const axiosErr = err as {
+            response?: {
+              data?: {
+                errors?: Array<{ code: string }>;
+              };
+            };
+          };
           const code = axiosErr?.response?.data?.errors?.[0]?.code;
 
           if (code === "per_record_limit_reached") {
-            setError("Maximum images reached for this entry");
+            setError("You've reached the photo limit for this entry");
             setErrorCode("per_record_limit_reached");
           } else if (code === "global_limit_reached") {
-            setError("You've reached your free image limit");
+            setError(
+              "You've used all 30 free photo slots. Upgrade to Pro for unlimited photos"
+            );
             setErrorCode("global_limit_reached");
           } else {
-            setError("Failed to save image. Please try again.");
+            setError("Photo uploaded but couldn't be saved. Please try again.");
             setErrorCode("upload_failed");
           }
           return;
         }
 
-        // ── Success: add to local state ──
+        // Success
         setImages((prev) => [...prev, imageRecord]);
+        sessionImageIds.current.add(imageRecord.id);
         setUploadStage("done");
 
-        // Reconcile with server after a short delay
         setTimeout(() => {
           refresh();
           setUploadStage("idle");
@@ -307,25 +361,48 @@ export function useImageManager(
     ]
   );
 
-  // ─── Soft delete ───────────────────────────────────────────────────────────
+  // ─── Cancel session cleanup ───────────────────────────────────────────────
+
+  const cancelSession = useCallback(async () => {
+    const ids = Array.from(sessionImageIds.current);
+    if (ids.length === 0) return;
+
+    sessionImageIds.current.clear();
+
+    // Optimistic UI update
+    setImages((prev) => prev.filter((img) => !ids.includes(img.id)));
+    setGlobalCount((c) => Math.max(0, c - ids.length));
+
+    // Fire-and-forget — errors are logged but don't block the cancel
+    await Promise.allSettled(
+      ids.map((id) =>
+        permanentDeleteImage(id).catch((err) =>
+          console.warn(
+            `[useImageManager] cancelSession: failed to delete ${id}:`,
+            err
+          )
+        )
+      )
+    );
+  }, []);
+
+  // ─── Soft delete ──────────────────────────────────────────────────────────
 
   const softDelete = useCallback(
     async (imageId: string) => {
-      // Optimistic: remove from active list immediately
+      sessionImageIds.current.delete(imageId);
       setImages((prev) => prev.filter((img) => img.id !== imageId));
-
       try {
         await softDeleteImage(imageId);
       } catch {
-        // Revert on failure
         await refresh();
-        setError("Failed to delete image. Please try again.");
+        setError("Couldn't delete that photo. Please try again.");
       }
     },
     [refresh]
   );
 
-  // ─── Restore ───────────────────────────────────────────────────────────────
+  // ─── Restore ─────────────────────────────────────────────────────────────
 
   const restore = useCallback(
     async (imageId: string) => {
@@ -333,35 +410,34 @@ export function useImageManager(
         const restored = await restoreImage(imageId);
         setImages((prev) => [...prev, restored]);
       } catch {
-        setError("Failed to restore image. The restore window may have expired.");
+        setError(
+          "Couldn't restore that photo. The 30-day restore window may have expired."
+        );
         await refresh();
       }
     },
     [refresh]
   );
 
-  // ─── Permanent delete ──────────────────────────────────────────────────────
+  // ─── Permanent delete ─────────────────────────────────────────────────────
 
   const permanentDelete = useCallback(
     async (imageId: string) => {
-      // Optimistic: remove from list + decrement global counter
+      sessionImageIds.current.delete(imageId);
       setImages((prev) => prev.filter((img) => img.id !== imageId));
       setGlobalCount((c) => Math.max(0, c - 1));
-
       try {
         await permanentDeleteImage(imageId);
-        // Reconcile with server
         await refresh();
       } catch {
-        // Revert on failure
         await refresh();
-        setError("Failed to permanently delete image. Please try again.");
+        setError("Couldn't permanently delete that photo. Please try again.");
       }
     },
     [refresh]
   );
 
-  // ─── Clear error ───────────────────────────────────────────────────────────
+  // ─── Clear error ──────────────────────────────────────────────────────────
 
   const clearError = useCallback(() => {
     setError(null);
@@ -382,11 +458,13 @@ export function useImageManager(
     globalLimit,
     isAtGlobalLimit,
     plan,
+    isOffline,
     upload,
     softDelete,
     restore,
     permanentDelete,
     clearError,
     refresh,
+    cancelSession,
   };
 }

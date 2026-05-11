@@ -20,7 +20,7 @@ import {
   Plus,
   Image as ImageIcon,
 } from "lucide-react";
-import ImageUpload from "../../components/ImageUpload";
+import ImageUpload, { type ImageUploadHandle } from "../../components/ImageUpload";
 import type { Person } from "../../type/PeopleType";
 
 interface PersonEditorProps {
@@ -68,10 +68,16 @@ export default function PersonEditor({
   const [showSocial, setShowSocial] = useState(false);
 
   const nameRef = useRef<HTMLInputElement>(null);
+  const imageUploadRef = useRef<ImageUploadHandle>(null);
 
   useEffect(() => {
     nameRef.current?.focus();
   }, []);
+
+  const handleCancel = async () => {
+    await imageUploadRef.current?.cancelSession();
+    onClose();
+  };
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -129,7 +135,7 @@ export default function PersonEditor({
             {person?.id ? "Edit Person" : "Add New Person"}
           </h3>
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="p-1 hover:bg-default rounded-lg transition-colors"
           >
             <X size={18} className="text-muted" />
@@ -211,6 +217,7 @@ export default function PersonEditor({
               </label>
               {person?.id ? (
                 <ImageUpload
+                  ref={imageUploadRef}
                   recordId={person.id}
                   recordType="person"
                   onImagesChange={setImages}
@@ -471,7 +478,7 @@ export default function PersonEditor({
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 p-3 sm:p-4 border-t border-default">
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="px-4 py-2 text-muted hover:text-primary transition-colors text-sm"
           >
             Cancel

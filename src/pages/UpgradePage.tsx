@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   CreditCard,
   Info,
+  Images,
 } from "lucide-react";
 import { protectedAxios } from "../../axios";
 import { useAuth } from "../hooks/useAuth";
@@ -25,15 +26,18 @@ const FEATURES = [
   "Unlimited journal entries",
   "Unlimited people profiles",
   "Unlimited place memories",
+  "5 photos per entry (journals, people & places)",
+  "Unlimited total photo storage",
   "Cross-device sync",
   "End-to-end encryption",
   "Priority support",
 ];
 
 const UNLOCKED = [
-  { icon: BookHeart, label: "Journal", bg: "bg-journal-soft", color: "text-[var(--color-journal-light)]" },
-  { icon: Users,     label: "People",  bg: "bg-people-soft",  color: "text-[var(--color-people-light)]" },
-  { icon: MapPin,    label: "Places",  bg: "bg-places-soft",  color: "text-[var(--color-places-light)]" },
+  { icon: BookHeart, label: "Journal", bg: "bg-journal-soft", color: "text-[var(--color-journal-light)]", detail: "Unlimited entries" },
+  { icon: Users,     label: "People",  bg: "bg-people-soft",  color: "text-[var(--color-people-light)]",  detail: "Unlimited profiles" },
+  { icon: MapPin,    label: "Places",  bg: "bg-places-soft",  color: "text-[var(--color-places-light)]",  detail: "Unlimited memories" },
+  { icon: Images,    label: "Photos",  bg: "bg-primary-500/5", color: "text-primary-500",                 detail: "5/entry, unlimited total" },
 ];
 
 const fadeUp = (delay = 0) => ({
@@ -327,11 +331,11 @@ export default function UpgradePage() {
               <div className="mb-6">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">Sections unlocked</p>
                 <div className="space-y-2.5">
-                  {UNLOCKED.map(({ icon: Icon, label, bg, color }) => (
+                  {UNLOCKED.map(({ icon: Icon, label, bg, color, detail }) => (
                     <div key={label} className={`flex items-center gap-3 rounded-xl border border-default ${bg} px-4 py-3`}>
                       <Icon size={18} className={`shrink-0 ${color}`} strokeWidth={1.75} />
                       <span className="text-sm font-semibold text-primary">{label}</span>
-                      <span className="ml-auto text-xs text-muted">Unlimited</span>
+                      <span className="ml-auto text-xs text-muted">{detail}</span>
                     </div>
                   ))}
                 </div>

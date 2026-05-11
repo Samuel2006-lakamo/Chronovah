@@ -1,5 +1,5 @@
 // pages/Journal/JournalEditor.tsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   X,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import MoodPicker from "./MoodPicker";
-import ImageUpload from "../../components/ImageUpload";
+import ImageUpload, { type ImageUploadHandle } from "../../components/ImageUpload";
 import MarkdownContent from "../../components/MarkdownContent";
 import AdvancedMarkdownEditor from "../../components/AdvancedMarkdownEditor";
 import type { JournalEntry, MoodType, WeatherType } from "../../type/JournalType";
@@ -52,6 +52,15 @@ export default function JournalEditor({
   const [isFavorite] = useState(entry?.isFavorite || false);
   const [isPreview, setIsPreview] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // Ref to ImageUpload so we can clean up session images on cancel
+  const imageUploadRef = useRef<ImageUploadHandle>(null);
+
+  const handleCancel = async () => {
+    // Delete any photos uploaded during this session if the user cancels
+    await imageUploadRef.current?.cancelSession();
+    onClose();
+  };
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -99,7 +108,7 @@ export default function JournalEditor({
             {entry?.id ? "Edit Journal Entry" : "New Journal Entry"}
           </h3>
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="p-1 hover:bg-default rounded-lg transition-colors"
           >
             <X size={18} className="text-muted" />
@@ -265,6 +274,7 @@ export default function JournalEditor({
                   </label>
                   {entry?.id ? (
                     <ImageUpload
+                      ref={imageUploadRef}
                       recordId={entry.id}
                       recordType="journal"
                       onImagesChange={setImages}
@@ -283,7 +293,7 @@ export default function JournalEditor({
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 p-3 sm:p-4 border-t border-default">
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="px-4 py-2 text-muted hover:text-primary transition-colors text-sm"
           >
             Cancel

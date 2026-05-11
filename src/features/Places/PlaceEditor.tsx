@@ -17,7 +17,7 @@ import {
   Check,
   ImageIcon,
 } from "lucide-react";
-import ImageUpload from "../../components/ImageUpload";
+import ImageUpload, { type ImageUploadHandle } from "../../components/ImageUpload";
 import type { Place, PlaceType } from "../../type/PlaceType";
 
 interface PlaceEditorProps {
@@ -67,10 +67,16 @@ export default function PlaceEditor({
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const nameRef = useRef<HTMLInputElement>(null);
+  const imageUploadRef = useRef<ImageUploadHandle>(null);
 
   useEffect(() => {
     nameRef.current?.focus();
   }, []);
+
+  const handleCancel = async () => {
+    await imageUploadRef.current?.cancelSession();
+    onClose();
+  };
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -121,7 +127,7 @@ export default function PlaceEditor({
             {place?.id ? "Edit Place" : "Add New Place"}
           </h3>
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="p-1 hover:bg-default rounded-lg transition-colors"
           >
             <X size={18} className="text-muted" />
@@ -220,6 +226,7 @@ export default function PlaceEditor({
               </label>
               {place?.id ? (
                 <ImageUpload
+                  ref={imageUploadRef}
                   recordId={place.id}
                   recordType="place"
                   onImagesChange={setImages}
@@ -397,7 +404,7 @@ export default function PlaceEditor({
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 p-4 border-t border-default">
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="px-4 py-2 text-muted hover:text-primary transition-colors"
           >
             Cancel
