@@ -53,6 +53,7 @@ export default function PlaceEditor({
   const [location, setLocation] = useState(place?.location || "");
   const [type, setType] = useState<PlaceType>(place?.type || "City");
   const [notes, setNotes] = useState(place?.notes || "");
+  // images is kept for backward compat with onSave; updated via ImageUpload's onImagesChange
   const [images, setImages] = useState<string[]>(place?.images || []);
   const [visitedDate, setVisitedDate] = useState(place?.visitedDate || "");
   const [rating, setRating] = useState(place?.rating || 0);
@@ -217,7 +218,17 @@ export default function PlaceEditor({
                 <ImageIcon size={14} />
                 Photos
               </label>
-              <ImageUpload images={images} onImagesChange={setImages} />
+              {place?.id ? (
+                <ImageUpload
+                  recordId={place.id}
+                  recordType="place"
+                  onImagesChange={setImages}
+                />
+              ) : (
+                <p className="text-xs text-muted py-2">
+                  Save the place first to add photos.
+                </p>
+              )}
             </div>
 
             {/* Notes */}

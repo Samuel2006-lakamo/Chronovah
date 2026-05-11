@@ -47,6 +47,7 @@ export default function JournalEditor({
     entry?.weather,
   );
   const [location, setLocation] = useState(entry?.location || "");
+  // images is kept for backward compat with onSave; updated via ImageUpload's onImagesChange
   const [images, setImages] = useState<string[]>(entry?.images || []);
   const [isFavorite] = useState(entry?.isFavorite || false);
   const [isPreview, setIsPreview] = useState(false);
@@ -262,11 +263,17 @@ export default function JournalEditor({
                     <ImageIcon size={14} />
                     Photos
                   </label>
-                  <ImageUpload
-                    images={images}
-                    onImagesChange={setImages}
-                    maxImages={5}
-                  />
+                  {entry?.id ? (
+                    <ImageUpload
+                      recordId={entry.id}
+                      recordType="journal"
+                      onImagesChange={setImages}
+                    />
+                  ) : (
+                    <p className="text-xs text-muted py-2">
+                      Save the entry first to add photos.
+                    </p>
+                  )}
                 </div>
               </motion.div>
             )}

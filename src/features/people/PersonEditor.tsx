@@ -49,6 +49,7 @@ export default function PersonEditor({
   const [nickname, setNickname] = useState(person?.nickname || "");
   const [description, setDescription] = useState(person?.description || "");
   const [image] = useState(person?.image || "");
+  // images is kept for backward compat with onSave; updated via ImageUpload's onImagesChange
   const [images, setImages] = useState<string[]>(person?.images || []);
   const [relation, setRelation] = useState(person?.relation || "Friend");
   const [birthday, setBirthday] = useState(person?.birthday || "");
@@ -208,11 +209,17 @@ export default function PersonEditor({
                 <ImageIcon size={14} />
                 Photos
               </label>
-              <ImageUpload
-                images={images}
-                onImagesChange={setImages}
-                maxImages={5}
-              />
+              {person?.id ? (
+                <ImageUpload
+                  recordId={person.id}
+                  recordType="person"
+                  onImagesChange={setImages}
+                />
+              ) : (
+                <p className="text-xs text-muted py-2">
+                  Save the person first to add photos.
+                </p>
+              )}
             </div>
 
             {/* Tags */}
