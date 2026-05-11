@@ -32,6 +32,7 @@ const FREE_FEATURES = [
   "Up to 20 journal entries",
   "Up to 12 people",
   "Up to 15 places",
+  "2 photos per entry (30 total)",
 ];
 
 const PRO_FEATURES = [
@@ -39,6 +40,7 @@ const PRO_FEATURES = [
   "Unlimited journal entries",
   "Unlimited people profiles",
   "Unlimited place memories",
+  "5 photos per entry, unlimited total",
   "Cross-device sync",
   "Priority support",
 ];

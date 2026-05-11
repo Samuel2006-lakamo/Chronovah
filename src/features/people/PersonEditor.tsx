@@ -20,7 +20,7 @@ import {
   Plus,
   Image as ImageIcon,
 } from "lucide-react";
-import ImageUpload from "../../components/ImageUpload";
+import ImageUpload, { type ImageUploadHandle } from "../../components/ImageUpload";
 import type { Person } from "../../type/PeopleType";
 
 interface PersonEditorProps {
@@ -49,6 +49,7 @@ export default function PersonEditor({
   const [nickname, setNickname] = useState(person?.nickname || "");
   const [description, setDescription] = useState(person?.description || "");
   const [image] = useState(person?.image || "");
+  // images is kept for backward compat with onSave; updated via ImageUpload's onImagesChange
   const [images, setImages] = useState<string[]>(person?.images || []);
   const [relation, setRelation] = useState(person?.relation || "Friend");
   const [birthday, setBirthday] = useState(person?.birthday || "");
@@ -67,10 +68,21 @@ export default function PersonEditor({
   const [showSocial, setShowSocial] = useState(false);
 
   const nameRef = useRef<HTMLInputElement>(null);
+  const imageUploadRef = useRef<ImageUploadHandle>(null);
 
   useEffect(() => {
     nameRef.current?.focus();
   }, []);
+
+  const handleCancel = async () => {
+    try {
+      await imageUploadRef.current?.cancelSession();
+    } catch (err) {
+      console.warn('[PersonEditor] Failed to cancel image session:', err);
+    } finally {
+      onClose();
+    }
+  };
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -128,7 +140,7 @@ export default function PersonEditor({
             {person?.id ? "Edit Person" : "Add New Person"}
           </h3>
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="p-1 hover:bg-default rounded-lg transition-colors"
           >
             <X size={18} className="text-muted" />
@@ -208,11 +220,18 @@ export default function PersonEditor({
                 <ImageIcon size={14} />
                 Photos
               </label>
-              <ImageUpload
-                images={images}
-                onImagesChange={setImages}
-                maxImages={5}
-              />
+              {person?.id ? (
+                <ImageUpload
+                  ref={imageUploadRef}
+                  recordId={person.id}
+                  recordType="person"
+                  onImagesChange={setImages}
+                />
+              ) : (
+                <p className="text-xs text-muted py-2">
+                  Save the person first to add photos.
+                </p>
+              )}
             </div>
 
             {/* Tags */}
@@ -464,7 +483,7 @@ export default function PersonEditor({
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 p-3 sm:p-4 border-t border-default">
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="px-4 py-2 text-muted hover:text-primary transition-colors text-sm"
           >
             Cancel

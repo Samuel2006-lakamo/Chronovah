@@ -1,5 +1,5 @@
 // pages/Journal/JournalEditor.tsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   X,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import MoodPicker from "./MoodPicker";
-import ImageUpload from "../../components/ImageUpload";
+import ImageUpload, { type ImageUploadHandle } from "../../components/ImageUpload";
 import MarkdownContent from "../../components/MarkdownContent";
 import AdvancedMarkdownEditor from "../../components/AdvancedMarkdownEditor";
 import type { JournalEntry, MoodType, WeatherType } from "../../type/JournalType";
@@ -47,10 +47,25 @@ export default function JournalEditor({
     entry?.weather,
   );
   const [location, setLocation] = useState(entry?.location || "");
+  // images is kept for backward compat with onSave; updated via ImageUpload's onImagesChange
   const [images, setImages] = useState<string[]>(entry?.images || []);
   const [isFavorite] = useState(entry?.isFavorite || false);
   const [isPreview, setIsPreview] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // Ref to ImageUpload so we can clean up session images on cancel
+  const imageUploadRef = useRef<ImageUploadHandle>(null);
+
+  const handleCancel = async () => {
+    // Delete any photos uploaded during this session if the user cancels
+    try {
+      await imageUploadRef.current?.cancelSession();
+    } catch (err) {
+      console.warn('[JournalEditor] Failed to cancel image session:', err);
+    } finally {
+      onClose();
+    }
+  };
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -98,7 +113,7 @@ export default function JournalEditor({
             {entry?.id ? "Edit Journal Entry" : "New Journal Entry"}
           </h3>
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="p-1 hover:bg-default rounded-lg transition-colors"
           >
             <X size={18} className="text-muted" />
@@ -262,11 +277,18 @@ export default function JournalEditor({
                     <ImageIcon size={14} />
                     Photos
                   </label>
-                  <ImageUpload
-                    images={images}
-                    onImagesChange={setImages}
-                    maxImages={5}
-                  />
+                  {entry?.id ? (
+                    <ImageUpload
+                      ref={imageUploadRef}
+                      recordId={entry.id}
+                      recordType="journal"
+                      onImagesChange={setImages}
+                    />
+                  ) : (
+                    <p className="text-xs text-muted py-2">
+                      Save the entry first to add photos.
+                    </p>
+                  )}
                 </div>
               </motion.div>
             )}
@@ -276,7 +298,7 @@ export default function JournalEditor({
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 p-3 sm:p-4 border-t border-default">
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="px-4 py-2 text-muted hover:text-primary transition-colors text-sm"
           >
             Cancel

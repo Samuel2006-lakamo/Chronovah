@@ -17,7 +17,7 @@ import {
   Check,
   ImageIcon,
 } from "lucide-react";
-import ImageUpload from "../../components/ImageUpload";
+import ImageUpload, { type ImageUploadHandle } from "../../components/ImageUpload";
 import type { Place, PlaceType } from "../../type/PlaceType";
 
 interface PlaceEditorProps {
@@ -53,6 +53,7 @@ export default function PlaceEditor({
   const [location, setLocation] = useState(place?.location || "");
   const [type, setType] = useState<PlaceType>(place?.type || "City");
   const [notes, setNotes] = useState(place?.notes || "");
+  // images is kept for backward compat with onSave; updated via ImageUpload's onImagesChange
   const [images, setImages] = useState<string[]>(place?.images || []);
   const [visitedDate, setVisitedDate] = useState(place?.visitedDate || "");
   const [rating, setRating] = useState(place?.rating || 0);
@@ -66,10 +67,21 @@ export default function PlaceEditor({
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const nameRef = useRef<HTMLInputElement>(null);
+  const imageUploadRef = useRef<ImageUploadHandle>(null);
 
   useEffect(() => {
     nameRef.current?.focus();
   }, []);
+
+  const handleCancel = async () => {
+    try {
+      await imageUploadRef.current?.cancelSession();
+    } catch (err) {
+      console.warn('[PlaceEditor] Failed to cancel image session:', err);
+    } finally {
+      onClose();
+    }
+  };
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -120,7 +132,7 @@ export default function PlaceEditor({
             {place?.id ? "Edit Place" : "Add New Place"}
           </h3>
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="p-1 hover:bg-default rounded-lg transition-colors"
           >
             <X size={18} className="text-muted" />
@@ -217,7 +229,18 @@ export default function PlaceEditor({
                 <ImageIcon size={14} />
                 Photos
               </label>
-              <ImageUpload images={images} onImagesChange={setImages} />
+              {place?.id ? (
+                <ImageUpload
+                  ref={imageUploadRef}
+                  recordId={place.id}
+                  recordType="place"
+                  onImagesChange={setImages}
+                />
+              ) : (
+                <p className="text-xs text-muted py-2">
+                  Save the place first to add photos.
+                </p>
+              )}
             </div>
 
             {/* Notes */}
@@ -386,7 +409,7 @@ export default function PlaceEditor({
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 p-4 border-t border-default">
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="px-4 py-2 text-muted hover:text-primary transition-colors"
           >
             Cancel
