@@ -152,7 +152,7 @@ export default function Notes() {
   const handleCreateNote = async () => {
     try {
       const newNote = await createNote({
-        title: "",
+        title: "Untitled",
         content: "",
         isPinned: false,
         isFavorite: false,

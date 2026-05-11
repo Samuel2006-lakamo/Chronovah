@@ -101,29 +101,75 @@ class SyncManager {
   async pullTable(userId: string, table: SyncTable): Promise<void> {
     if (!this.isOnline) return;
     try {
+      // Check for pending create operations for this table before pulling.
+      // If any exist, we must not delete those locally-created records from
+      // Dexie — they haven't been confirmed by the server yet.
+      // Note: syncQueue only has individual indexes (no compound index), so we
+      // filter on the indexed `userId` field first, then narrow in JS.
+      const pendingCreates = await db.syncQueue
+        .where('userId').equals(userId)
+        .filter((op) => op.table === table && op.operation === 'create')
+        .toArray();
+      const pendingIds = new Set(pendingCreates.map((op) => op.recordId));
+      const hasPendingCreates = pendingIds.size > 0;
+
       switch (table) {
         case 'notes': {
           const { data } = await protectedAxios.get<Note[]>('/notes');
-          await db.notes.where('userId').equals(userId).delete();
-          if (data?.length) await db.notes.bulkAdd(data);
+          if (hasPendingCreates) {
+            // Merge path: preserve locally-created notes not yet on the server
+            await db.notes
+              .where('userId').equals(userId)
+              .filter((record) => !pendingIds.has(record.id))
+              .delete();
+            if (data?.length) await db.notes.bulkPut(data);
+          } else {
+            // Fast path: no pending creates — safe to replace entirely
+            await db.notes.where('userId').equals(userId).delete();
+            if (data?.length) await db.notes.bulkAdd(data);
+          }
           break;
         }
         case 'journal': {
           const { data } = await protectedAxios.get<JournalEntry[]>('/journal');
-          await db.journal.where('userId').equals(userId).delete();
-          if (data?.length) await db.journal.bulkAdd(data);
+          if (hasPendingCreates) {
+            await db.journal
+              .where('userId').equals(userId)
+              .filter((record) => !pendingIds.has(record.id))
+              .delete();
+            if (data?.length) await db.journal.bulkPut(data);
+          } else {
+            await db.journal.where('userId').equals(userId).delete();
+            if (data?.length) await db.journal.bulkAdd(data);
+          }
           break;
         }
         case 'people': {
           const { data } = await protectedAxios.get<Person[]>('/people');
-          await db.people.where('userId').equals(userId).delete();
-          if (data?.length) await db.people.bulkAdd(data);
+          if (hasPendingCreates) {
+            await db.people
+              .where('userId').equals(userId)
+              .filter((record) => !pendingIds.has(record.id))
+              .delete();
+            if (data?.length) await db.people.bulkPut(data);
+          } else {
+            await db.people.where('userId').equals(userId).delete();
+            if (data?.length) await db.people.bulkAdd(data);
+          }
           break;
         }
         case 'places': {
           const { data } = await protectedAxios.get<Place[]>('/places');
-          await db.places.where('userId').equals(userId).delete();
-          if (data?.length) await db.places.bulkAdd(data);
+          if (hasPendingCreates) {
+            await db.places
+              .where('userId').equals(userId)
+              .filter((record) => !pendingIds.has(record.id))
+              .delete();
+            if (data?.length) await db.places.bulkPut(data);
+          } else {
+            await db.places.where('userId').equals(userId).delete();
+            if (data?.length) await db.places.bulkAdd(data);
+          }
           break;
         }
       }
