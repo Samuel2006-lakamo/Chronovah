@@ -73,17 +73,6 @@ export default function ImageGallery({
                 loading="lazy"
               />
 
-                {/* Permanent delete */}
-                <button
-                  onClick={() => setConfirmDeleteId(img.id)}
-                  className="p-1.5 bg-white rounded-full hover:bg-yellow-50 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-                  title="Permanently delete"
-                  aria-label="Permanently delete image"
-                  disabled={isUploading}
-                >
-                  <AlertTriangle size={13} className="text-yellow-600" />
-                </button>
-
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-1.5">
                 {/* Preview */}
@@ -106,6 +95,17 @@ export default function ImageGallery({
                   disabled={isUploading}
                 >
                   <Trash2 size={13} className="text-red-500" />
+                </button>
+
+                {/* Permanent delete */}
+                <button
+                  onClick={() => setConfirmDeleteId(img.id)}
+                  className="p-1.5 bg-white rounded-full hover:bg-yellow-50 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  title="Permanently delete"
+                  aria-label="Permanently delete image"
+                  disabled={isUploading}
+                >
+                  <AlertTriangle size={13} className="text-yellow-600" />
                 </button>
               </div>
 
@@ -142,7 +142,18 @@ export default function ImageGallery({
             </motion.div>
           ))}
         </AnimatePresence>
-      </di  role="dialog"
+      </div>
+
+      {/* Full-screen preview modal */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setPreviewImage(null)}
+            role="dialog"
             aria-modal="true"
           >
             <motion.div
@@ -162,18 +173,7 @@ export default function ImageGallery({
                 onClick={() => setPreviewImage(null)}
                 className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black/80 rounded-full text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Close preview"
-                tabIndex={0}l max-h-[90vh]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img
-                src={previewImage}
-                alt="Full size preview"
-                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-              />
-              <button
-                onClick={() => setPreviewImage(null)}
-                className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black/80 rounded-full text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-                aria-label="Close preview"
+                tabIndex={0}
               >
                 <X size={18} />
               </button>
