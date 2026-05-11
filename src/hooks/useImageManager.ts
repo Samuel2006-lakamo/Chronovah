@@ -95,7 +95,7 @@ export function useImageManager(
 
   // Track image IDs uploaded in this editor session for cancel cleanup
   const sessionImageIds = useRef<Set<string>>(new Set());
-  const postUploadTimer = useRef<NodeJS.Timeout | null>(null);
+  const postUploadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Seed counters from subscription store; reconciled with server on load
   const effectivePlan: "free" | "pro" =
