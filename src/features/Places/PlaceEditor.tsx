@@ -74,8 +74,13 @@ export default function PlaceEditor({
   }, []);
 
   const handleCancel = async () => {
-    await imageUploadRef.current?.cancelSession();
-    onClose();
+    try {
+      await imageUploadRef.current?.cancelSession();
+    } catch (err) {
+      console.warn('[PlaceEditor] Failed to cancel image session:', err);
+    } finally {
+      onClose();
+    }
   };
 
   const addTag = () => {

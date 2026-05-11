@@ -5,7 +5,7 @@
  * and permanent-delete actions.
  */
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Maximize2, Trash2, AlertTriangle } from "lucide-react";
 import type { ImageRecord } from "../type/ImageType";
@@ -25,6 +25,30 @@ export default function ImageGallery({
 }: ImageGalleryProps) {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const savedFocusRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Keyboard + focus management for preview modal
+  useEffect(() => {
+    if (previewImage) {
+      // Save current focus
+      savedFocusRef.current = document.activeElement as HTMLElement;
+      // Focus close button
+      closeButtonRef.current?.focus();
+      // Add keydown listener
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setPreviewImage(null);
+        }
+      };
+      document.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+        // Restore focus
+        savedFocusRef.current?.focus();
+      };
+    }
+  }, [previewImage]);
 
   if (images.length === 0) return null;
 
@@ -48,6 +72,17 @@ export default function ImageGallery({
                 onClick={() => setPreviewImage(img.secureUrl)}
                 loading="lazy"
               />
+
+                {/* Permanent delete */}
+                <button
+                  onClick={() => setConfirmDeleteId(img.id)}
+                  className="p-1.5 bg-white rounded-full hover:bg-yellow-50 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  title="Permanently delete"
+                  aria-label="Permanently delete image"
+                  disabled={isUploading}
+                >
+                  <AlertTriangle size={13} className="text-yellow-600" />
+                </button>
 
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-1.5">
@@ -107,23 +142,27 @@ export default function ImageGallery({
             </motion.div>
           ))}
         </AnimatePresence>
-      </div>
-
-      {/* Full-screen preview modal */}
-      <AnimatePresence>
-        {previewImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setPreviewImage(null)}
+      </di  role="dialog"
+            aria-modal="true"
           >
             <motion.div
               initial={{ scale: 0.92 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.92 }}
               className="relative max-w-4xl max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={previewImage}
+                alt="Full size preview"
+                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              />
+              <button
+                ref={closeButtonRef}
+                onClick={() => setPreviewImage(null)}
+                className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black/80 rounded-full text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                aria-label="Close preview"
+                tabIndex={0}l max-h-[90vh]"
               onClick={(e) => e.stopPropagation()}
             >
               <img

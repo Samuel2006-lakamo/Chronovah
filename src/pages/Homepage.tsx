@@ -44,6 +44,12 @@ function Homepage() {
     );
 
     return () => {
+      // Remove any theme-* and surface-* classes that might have been added while mounted
+      Array.from(root.classList).forEach((c) => {
+        if (c.startsWith("theme-") || c.startsWith("surface-")) {
+          root.classList.remove(c);
+        }
+      });
       // Restore the user's classes when leaving the landing page
       [...existingThemeClasses, ...existingSurfaceClasses].forEach((c) =>
         root.classList.add(c)

@@ -95,6 +95,7 @@ export function useImageManager(
 
   // Track image IDs uploaded in this editor session for cancel cleanup
   const sessionImageIds = useRef<Set<string>>(new Set());
+  const postUploadTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Seed counters from subscription store; reconciled with server on load
   const effectivePlan: "free" | "pro" =
@@ -150,6 +151,17 @@ export function useImageManager(
     refresh();
   }, [refresh]);
 
+  // ─── Cleanup timer on unmount ─────────────────────────────────────────────
+
+  useEffect(() => {
+    return () => {
+      if (postUploadTimer.current) {
+        clearTimeout(postUploadTimer.current);
+        postUploadTimer.current = null;
+      }
+    };
+  }, []);
+
   // ─── Upload ───────────────────────────────────────────────────────────────
 
   const upload = useCallback(
@@ -188,8 +200,9 @@ export function useImageManager(
       }
 
       if (isAtGlobalLimit) {
+        const limitText = globalLimit ? `all ${globalLimit} free photo slots` : 'your free photo slots';
         setError(
-          "You've used all 30 free photo slots. Upgrade to Pro for unlimited photos"
+          `You've used ${limitText}. Upgrade to Pro for unlimited photos`
         );
         setErrorCode("global_limit_reached");
         return;
@@ -237,8 +250,9 @@ export function useImageManager(
             setError("You've reached the photo limit for this entry");
             setErrorCode("per_record_limit_reached");
           } else if (code === "global_limit_reached") {
+            const limitText = globalLimit ? `all ${globalLimit} free photo slots` : 'your free photo slots';
             setError(
-              "You've used all 30 free photo slots. Upgrade to Pro for unlimited photos"
+              `You've used ${limitText}. Upgrade to Pro for unlimited photos`
             );
             setErrorCode("global_limit_reached");
           } else if (isNetworkError) {
@@ -326,8 +340,9 @@ export function useImageManager(
             setError("You've reached the photo limit for this entry");
             setErrorCode("per_record_limit_reached");
           } else if (code === "global_limit_reached") {
+            const limitText = globalLimit ? `all ${globalLimit} free photo slots` : 'your free photo slots';
             setError(
-              "You've used all 30 free photo slots. Upgrade to Pro for unlimited photos"
+              `You've used ${limitText}. Upgrade to Pro for unlimited photos`
             );
             setErrorCode("global_limit_reached");
           } else {
@@ -342,7 +357,11 @@ export function useImageManager(
         sessionImageIds.current.add(imageRecord.id);
         setUploadStage("done");
 
-        setTimeout(() => {
+        // Clear any existing timer before setting a new one
+        if (postUploadTimer.current) {
+          clearTimeout(postUploadTimer.current);
+        }
+        postUploadTimer.current = setTimeout(() => {
           refresh();
           setUploadStage("idle");
         }, 1500);

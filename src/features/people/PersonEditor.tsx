@@ -75,8 +75,13 @@ export default function PersonEditor({
   }, []);
 
   const handleCancel = async () => {
-    await imageUploadRef.current?.cancelSession();
-    onClose();
+    try {
+      await imageUploadRef.current?.cancelSession();
+    } catch (err) {
+      console.warn('[PersonEditor] Failed to cancel image session:', err);
+    } finally {
+      onClose();
+    }
   };
 
   const addTag = () => {

@@ -58,8 +58,13 @@ export default function JournalEditor({
 
   const handleCancel = async () => {
     // Delete any photos uploaded during this session if the user cancels
-    await imageUploadRef.current?.cancelSession();
-    onClose();
+    try {
+      await imageUploadRef.current?.cancelSession();
+    } catch (err) {
+      console.warn('[JournalEditor] Failed to cancel image session:', err);
+    } finally {
+      onClose();
+    }
   };
 
   const addTag = () => {
