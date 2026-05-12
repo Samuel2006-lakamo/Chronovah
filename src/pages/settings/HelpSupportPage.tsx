@@ -54,12 +54,12 @@ const responseData = response.statusText;
         setTimeout(() => setSubmitted(false), 5000);
       } else {
         error(
-          "Failed to send message. Please email us directly at support@chronovah.xyz",
+          "Failed to send message. Please email us directly at yoursupport@chronovah.xyz",
         );
       }
     } catch (err) {
       console.error("Error sending message:", err);
-      error("Failed to send message. Please email us directly at support@chronovah.xyz");
+      error("Failed to send message. Please email us directly at yoursupport@chronovah.xyz");
     } finally {
       setIsSubmitting(false);
     }

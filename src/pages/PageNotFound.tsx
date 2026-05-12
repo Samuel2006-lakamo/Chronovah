@@ -5,14 +5,6 @@ import { motion } from "framer-motion";
 export default function PageNotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-linear-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
-      <motion.img
-        src="https://unsplash.com/illustrations/person-holding-tablet-with-404-error-message-5F9QtAUVDUE"
-        alt="Not Found Illustration"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="w-64 mb-8"
-      />
 
       <motion.h1
         initial={{ opacity: 0 }}
