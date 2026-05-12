@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, MessageSquare, Clock, ArrowRight, CheckCircle } from "lucide-react";
 import { useSEO } from "../hooks/useSEO";
+import { SUPPORT_EMAIL, FEEDBACK_EMAIL } from "../lib/constants";
 
 const TOPICS = [
   "General question",
@@ -19,8 +20,8 @@ const INFO = [
     icon: Mail,
     title: "Email us",
     desc: "We read every message and reply within 2 business days.",
-    value: "support@chronovah.com",
-    href: "mailto:support@chronovah.com",
+    value: SUPPORT_EMAIL,
+    href: `mailto:${SUPPORT_EMAIL}`,
   },
   {
     icon: Clock,
@@ -33,8 +34,8 @@ const INFO = [
     icon: MessageSquare,
     title: "Feedback",
     desc: "Have an idea or spotted something off? We want to hear it.",
-    value: "feedback@chronovah.com",
-    href: "mailto:feedback@chronovah.com",
+    value: FEEDBACK_EMAIL,
+    href: `mailto:${FEEDBACK_EMAIL}`,
   },
 ];
 

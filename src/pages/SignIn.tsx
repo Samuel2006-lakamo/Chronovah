@@ -37,7 +37,7 @@ export default function SignIn() {
       setFormError("Google sign-in failed. Please try again or use email and password.");
     }
   }, [searchParams]);
-  //   email: "demo@chronovah.com",
+  //   email: "demo@chronovah.xyz",
   //   password: "Demo123!",
   // };
 

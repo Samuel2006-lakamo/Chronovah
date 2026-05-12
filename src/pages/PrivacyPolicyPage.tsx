@@ -51,7 +51,7 @@ We are not responsible for the privacy practices of these services.`,
 • Request deletion of your account and associated data.
 • Export your data at any time from the Settings page.
 
-To exercise any of these rights, email us at support@chronovah.com.`,
+To exercise any of these rights, email us at support@chronovah.xyz.`,
   },
   {
     title: "7. Children's privacy",
@@ -63,7 +63,7 @@ To exercise any of these rights, email us at support@chronovah.com.`,
   },
   {
     title: "9. Contact",
-    body: `Questions about this policy? Email us at support@chronovah.com.`,
+    body: `Questions about this policy? Email us at support@chronovah.xyz.`,
   },
 ];
 

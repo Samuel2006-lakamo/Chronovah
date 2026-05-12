@@ -14,7 +14,7 @@ export default function SettingsSubPageLayout({ title, description, children }: 
   return (
     // AppLayout already adds pt-[60px] for the fixed header.
     // This just adds comfortable breathing room inside the content area.
-    <div className="py-6 px-3 sm:px-4 md:px-6 pb-24">
+    <div className="py-12 sm:py-8 md:py-6 p px-3 sm:px-4 md:px-6 pb-24">
       <div className=" mx-auto">
         {/* Back button */}
         <button
@@ -27,15 +27,15 @@ export default function SettingsSubPageLayout({ title, description, children }: 
 
         {/* Page header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-primary tracking-tight">{title}</h1>
+          <h1 className="text-2xl font-bold text-primary tracking-tight">
+            {title}
+          </h1>
           {description && (
             <p className="text-sm text-muted mt-1">{description}</p>
           )}
         </div>
 
-        <div className="space-y-4">
-          {children}
-        </div>
+        <div className="space-y-4">{children}</div>
       </div>
     </div>
   );

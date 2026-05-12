@@ -166,7 +166,7 @@ export default function Faq() {
             Can not find the answer you are looking for? Reach out to our team.
           </p>
           <a
-            href="mailto:support@chronovah.com"
+            href="mailto:support@chronovah.xyz"
             className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
           >
             Contact support

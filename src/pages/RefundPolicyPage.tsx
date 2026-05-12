@@ -26,7 +26,7 @@ Cancelling your subscription does not entitle you to a refund for the current or
   },
   {
     title: "3. Exceptions",
-    body: `We may, at our sole discretion, issue a refund or credit in exceptional circumstances — for example, if you were charged in error due to a technical fault on our side. To request a review, email support@chronovah.com within 7 days of the charge with your account email and a description of the issue.
+    body: `We may, at our sole discretion, issue a refund or credit in exceptional circumstances — for example, if you were charged in error due to a technical fault on our side. To request a review, email support@chronovah.xyz within 7 days of the charge with your account email and a description of the issue.
 
 We are not obligated to grant any exception and will evaluate each case individually.`,
   },
@@ -44,7 +44,7 @@ We are not obligated to grant any exception and will evaluate each case individu
   },
   {
     title: "7. Contact",
-    body: `Questions about a charge or this policy? Email us at support@chronovah.com and we'll get back to you within 2 business days.`,
+    body: `Questions about a charge or this policy? Email us at support@chronovah.xyz and we'll get back to you within 2 business days.`,
   },
 ];
 
