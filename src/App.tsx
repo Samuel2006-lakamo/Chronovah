@@ -22,6 +22,7 @@ const SettingsAppearance = lazy(() => import("./pages/settings/AppearancePage"))
 const SettingsNotifications = lazy(() => import("./pages/settings/NotificationsPage"));
 const SettingsStorage = lazy(() => import("./pages/settings/StoragePage"));
 const SettingsAccount = lazy(() => import("./pages/settings/AccountPage"));
+const SettingsHelpSupport = lazy(() => import("./pages/settings/HelpSupportPage"));
 const ItemDetails = lazy(() => import("./ui/ItemDetails"));
 const Homepage = lazy(() => import("./pages/Homepage"));
 const SignIn = lazy(() => import("./pages/SignIn"));
@@ -123,6 +124,7 @@ function App() {
             <Route path="settings/notifications" element={<SettingsNotifications />} />
             <Route path="settings/storage" element={<SettingsStorage />} />
             <Route path="settings/account" element={<SettingsAccount />} />
+            <Route path="settings/help-support" element={<SettingsHelpSupport />} />
             <Route path="billing" element={<BillingPage />} />
             <Route path="item/:type/:id" element={<ItemDetails />} />
           </Route>

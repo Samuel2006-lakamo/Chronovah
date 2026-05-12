@@ -96,7 +96,7 @@ function buildSections(isProActive: boolean): { heading: string; items: Settings
           icon: HelpCircle,
           label: "Help & Support",
           description: "Contact us, FAQs, feedback",
-          path: "/contact",
+          path: "/settings/help-support",
           iconBg: "bg-teal-500/10",
           iconColor: "text-teal-500",
         },
@@ -112,7 +112,7 @@ function SettingsRow({ item }: { item: SettingsItem }) {
   return (
     <button
       onClick={() => navigate(item.path)}
-      className="w-full flex items-center gap-4 px-4 py-3.5 hover:bg-default transition-colors text-left group"
+      className="w-full flex items-center  gap-4 px-4 py-3.5 hover:bg-default transition-colors text-left group"
     >
       <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${item.iconBg}`}>
         <Icon size={18} className={item.iconColor} />
@@ -137,7 +137,7 @@ export default function Settings() {
 
   return (
     // AppLayout handles header clearance via pt-[60px].
-    <div className="py-6 px-3 sm:px-4 md:px-6 pb-24">
+    <div className="py-12 sm:py-8 md:py-6 px-3 sm:px-4 md:px-6 pb-24">
       <div className=" mx-auto">
 
         {/* Page title */}

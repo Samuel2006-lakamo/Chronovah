@@ -16,7 +16,7 @@ const sections = [
   },
   {
     title: "3. Accounts",
-    body: `You must provide accurate information when creating an account. You are responsible for maintaining the confidentiality of your credentials and for all activity that occurs under your account. Notify us immediately at support@chronovah.com if you suspect unauthorised access.`,
+    body: `You must provide accurate information when creating an account. You are responsible for maintaining the confidentiality of your credentials and for all activity that occurs under your account. Notify us immediately at support@chronovah.xyz if you suspect unauthorised access.`,
   },
   {
     title: "4. Acceptable use",
@@ -64,7 +64,7 @@ Subscriptions renew automatically unless cancelled before the renewal date. You 
   },
   {
     title: "13. Contact",
-    body: `Questions about these Terms? Email us at support@chronovah.com.`,
+    body: `Questions about these Terms? Email us at support@chronovah.xyz.`,
   },
 ];
 

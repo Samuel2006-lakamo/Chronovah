@@ -6,15 +6,6 @@ export default function PageNotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-linear-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
 
-      <motion.img
-        // src={NotFoundIllustration}
-        alt="Not Found Illustration"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="w-64 mb-8"
-      />
-
       <motion.h1
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -28,7 +19,7 @@ export default function PageNotFound() {
         The page you're looking for doesn’t exist or has been moved.
       </p>
 
-      <Link to="/" className="mt-8">
+      <Link to="/dashboard" className="mt-8">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -37,7 +28,6 @@ export default function PageNotFound() {
           Go Home
         </motion.button>
       </Link>
-
     </div>
   );
 }

@@ -117,7 +117,7 @@ function Header() {
     ? [
         { path: "/dashboard", label: "Dashboard", icon: Home },
         { path: "/notes",     label: "Notes",     icon: BookOpen },
-        { path: "/journeys",  label: "Journeys",  icon: Compass },
+        { path: "/journal",  label: "Journals",  icon: Compass },
         { path: "/places",    label: "Places",    icon: MapPin },
         { path: "/people",    label: "People",    icon: Users },
       ]
@@ -342,7 +342,7 @@ function Header() {
               <div className="flex flex-col h-full">
                 <div className="p-4 border-b border-default">
                   <div className="flex items-center gap-2">
-                    <Box className="w-8 h-8 text-primary-500 p-1" />
+                    <Box className="w-8 h-8 text-primary p-1" />
                     <span className="font-bold text-lg text-primary"
                       style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
                     >
