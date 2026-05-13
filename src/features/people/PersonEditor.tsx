@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import ImageUpload, { type ImageUploadHandle } from "../../components/ImageUpload";
 import type { Person } from "../../type/PeopleType";
+import { newId } from "../../lib/helpers";
 
 interface PersonEditorProps {
   person: Partial<Person> | null;
@@ -67,6 +68,9 @@ export default function PersonEditor({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showSocial, setShowSocial] = useState(false);
 
+  // Pre-generate the record ID so images can be uploaded before the record is saved.
+  const [recordId] = useState<string>(() => person?.id ?? newId());
+
   const nameRef = useRef<HTMLInputElement>(null);
   const imageUploadRef = useRef<ImageUploadHandle>(null);
 
@@ -97,6 +101,7 @@ export default function PersonEditor({
 
   const handleSubmit = () => {
     onSave({
+      id: recordId,
       name,
       nickname: nickname || undefined,
       description,
@@ -220,18 +225,12 @@ export default function PersonEditor({
                 <ImageIcon size={14} />
                 Photos
               </label>
-              {person?.id ? (
-                <ImageUpload
-                  ref={imageUploadRef}
-                  recordId={person.id}
-                  recordType="person"
-                  onImagesChange={setImages}
-                />
-              ) : (
-                <p className="text-xs text-muted py-2">
-                  Save the person first to add photos.
-                </p>
-              )}
+              <ImageUpload
+                ref={imageUploadRef}
+                recordId={recordId}
+                recordType="person"
+                onImagesChange={setImages}
+              />
             </div>
 
             {/* Tags */}

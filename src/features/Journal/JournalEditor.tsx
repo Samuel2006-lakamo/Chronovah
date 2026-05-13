@@ -18,6 +18,7 @@ import ImageUpload, { type ImageUploadHandle } from "../../components/ImageUploa
 import MarkdownContent from "../../components/MarkdownContent";
 import AdvancedMarkdownEditor from "../../components/AdvancedMarkdownEditor";
 import type { JournalEntry, MoodType, WeatherType } from "../../type/JournalType";
+import { newId } from "../../lib/helpers";
 
 interface JournalEditorProps {
   entry: Partial<JournalEntry> | null;
@@ -53,6 +54,10 @@ export default function JournalEditor({
   const [isPreview, setIsPreview] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  // Pre-generate the record ID so images can be uploaded before the record is saved.
+  // If editing an existing entry, use its existing ID.
+  const [recordId] = useState<string>(() => entry?.id ?? newId());
+
   // Ref to ImageUpload so we can clean up session images on cancel
   const imageUploadRef = useRef<ImageUploadHandle>(null);
 
@@ -82,6 +87,7 @@ export default function JournalEditor({
     if (!mood) return;
 
     onSave({
+      id: recordId,
       mood,
       note,
       tags,
@@ -277,18 +283,12 @@ export default function JournalEditor({
                     <ImageIcon size={14} />
                     Photos
                   </label>
-                  {entry?.id ? (
-                    <ImageUpload
-                      ref={imageUploadRef}
-                      recordId={entry.id}
-                      recordType="journal"
-                      onImagesChange={setImages}
-                    />
-                  ) : (
-                    <p className="text-xs text-muted py-2">
-                      Save the entry first to add photos.
-                    </p>
-                  )}
+                  <ImageUpload
+                    ref={imageUploadRef}
+                    recordId={recordId}
+                    recordType="journal"
+                    onImagesChange={setImages}
+                  />
                 </div>
               </motion.div>
             )}

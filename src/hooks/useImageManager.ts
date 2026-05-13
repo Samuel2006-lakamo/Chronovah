@@ -91,7 +91,7 @@ export function useImageManager(
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<ImageErrorCode | null>(null);
-  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [isOffline, setIsOffline] = useState(false); // start optimistic — only go offline when event fires
 
   // Track image IDs uploaded in this editor session for cancel cleanup
   const sessionImageIds = useRef<Set<string>>(new Set());
@@ -171,7 +171,7 @@ export function useImageManager(
 
       // Block immediately if offline (best-effort — actual network errors are
       // caught per-stage below with more reliable detection)
-      if (!navigator.onLine) {
+      if (isOffline) {
         setError(
           "You're offline right now. Photo uploads need an internet connection — your other changes will still save. Come back online and edit this entry to add photos."
         );
@@ -229,31 +229,36 @@ export function useImageManager(
         } catch (err: unknown) {
           const axiosErr = err as {
             response?: {
+              status?: number;
               data?: {
                 errors?: Array<{ code: string }>;
                 message?: string;
+                error?: string;
               };
             };
             code?: string;
             message?: string;
           };
           const code = axiosErr?.response?.data?.errors?.[0]?.code;
-          const message = axiosErr?.response?.data?.message;
-          // Axios network errors have no response and code "ERR_NETWORK" or message "Network Error"
+          const message =
+            axiosErr?.response?.data?.message ||
+            axiosErr?.response?.data?.error;
+
+          // Only treat as network error when the error is explicitly a network
+          // failure — NOT just because there's no response (that also covers
+          // auth errors, CORS, etc.)
           const isNetworkError =
-            !axiosErr?.response ||
             axiosErr?.code === "ERR_NETWORK" ||
+            axiosErr?.code === "ECONNABORTED" ||
             axiosErr?.message === "Network Error" ||
-            !navigator.onLine;
+            (axiosErr?.message?.toLowerCase().includes("network") && !axiosErr?.response);
 
           if (code === "per_record_limit_reached") {
             setError("You've reached the photo limit for this entry");
             setErrorCode("per_record_limit_reached");
           } else if (code === "global_limit_reached") {
-            const limitText = globalLimit ? `all ${globalLimit} free photo slots` : 'your free photo slots';
-            setError(
-              `You've used ${limitText}. Upgrade to Pro for unlimited photos`
-            );
+            const limitText = globalLimit ? `all ${globalLimit} free photo slots` : "your free photo slots";
+            setError(`You've used ${limitText}. Upgrade to Pro for unlimited photos`);
             setErrorCode("global_limit_reached");
           } else if (isNetworkError) {
             setError(
@@ -261,6 +266,7 @@ export function useImageManager(
             );
             setErrorCode("network_error");
           } else {
+            // Show the actual server error message so we can debug it
             setError(message || "Couldn't start the upload. Please try again.");
             setErrorCode("upload_failed");
           }
@@ -298,10 +304,15 @@ export function useImageManager(
           cloudinaryResult = await cloudRes.json();
         } catch (fetchErr: unknown) {
           setGlobalCount((c) => Math.max(0, c - 1));
-          // TypeError "Failed to fetch" = network unreachable (offline or no internet)
+          // "Failed to fetch" TypeError = network unreachable
+          // Check the message explicitly rather than just instanceof TypeError
           const isNetworkError =
-            fetchErr instanceof TypeError ||
-            !navigator.onLine;
+            (fetchErr instanceof TypeError &&
+              (fetchErr.message.includes("fetch") ||
+               fetchErr.message.includes("network") ||
+               fetchErr.message.includes("Failed"))) ||
+            (fetchErr instanceof Error && fetchErr.message.includes("NetworkError"));
+
           if (isNetworkError) {
             setError(
               "You're offline right now. Photo uploads need an internet connection — your other changes will still save. Come back online and edit this entry to add photos."
