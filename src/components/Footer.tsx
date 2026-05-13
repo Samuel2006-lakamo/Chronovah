@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { Box } from "lucide-react";
 
 const LINKS = {
   Product: [
@@ -52,13 +51,19 @@ export default function Footer() {
               onClick={() => navigate("/")}
               className="mb-4 flex items-center gap-2"
             >
-              <div className="relative">
-                <Box className="relative h-7 w-7 text-primary-500" />
-              </div>
-              <span
-                className="text-base font-bold tracking-tight text-primary"
-                style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
-              >Chronovah</span>
+              <img
+                src="/logo-light.png"
+                alt="Chronovah"
+                className="block dark:hidden h-7 w-auto object-contain"
+              />
+              <img
+                src="/logo-dark.png"
+                alt="Chronovah"
+                className="hidden dark:block h-7 w-auto object-contain"
+              />
+              <span className="font-['Instrument_Serif'] text-xl font-normal tracking-tight text-primary">
+                Chronovah
+              </span>
             </button>
             <p className="max-w-[220px] text-sm leading-relaxed text-muted">
               An offline-first personal workspace for notes, places, people, and journal.

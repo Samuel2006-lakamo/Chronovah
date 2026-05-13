@@ -77,85 +77,89 @@ const responseData = response.statusText;
         <h3 className="text-sm font-semibold text-primary">Contact Us</h3>
 
         {/* Support Email Card */}
-        <div className="bg-card border border-default rounded-xl p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center shrink-0">
-                <Mail size={18} className="text-primary-600 dark:text-primary-400" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-sm font-semibold text-primary mb-1">
-                  Report Issues & General Support
-                </h4>
-                <p className="text-xs text-muted mb-2">
-                  We reply within 2 business days
-                </p>
-                <p className="text-sm font-mono text-primary-600 dark:text-primary-400">
-                  {SUPPORT_EMAIL}
-                </p>
-              </div>
+        <div className="bg-card border border-default rounded-xl p-4 overflow-hidden">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-primary-500/10 flex items-center justify-center shrink-0 mt-0.5">
+              <Mail size={16} className="text-primary-600 dark:text-primary-400" />
             </div>
-            <div className="flex gap-2 shrink-0">
-              <button
-                onClick={() => handleCopyEmail(SUPPORT_EMAIL)}
-                className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
-                title="Copy email"
-              >
-                {copiedEmail === SUPPORT_EMAIL ? (
-                  <CheckCircle size={16} className="text-accent-green" />
-                ) : (
-                  <Copy size={16} className="text-muted" />
-                )}
-              </button>
-              <button
-                onClick={() => handleOpenMailClient(SUPPORT_EMAIL)}
-                className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
-                title="Open email client"
-              >
-                <Mail size={16} className="text-primary-600 dark:text-primary-400" />
-              </button>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <h4 className="text-sm font-semibold text-primary mb-0.5">
+                    Report Issues & General Support
+                  </h4>
+                  <p className="text-xs text-muted mb-1.5">
+                    We reply within 2 business days
+                  </p>
+                  <p className="text-xs font-mono text-primary-600 dark:text-primary-400 break-all">
+                    {SUPPORT_EMAIL}
+                  </p>
+                </div>
+                <div className="flex gap-1.5 shrink-0">
+                  <button
+                    onClick={() => handleCopyEmail(SUPPORT_EMAIL)}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
+                    title="Copy email"
+                  >
+                    {copiedEmail === SUPPORT_EMAIL ? (
+                      <CheckCircle size={14} className="text-accent-green" />
+                    ) : (
+                      <Copy size={14} className="text-muted" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => handleOpenMailClient(SUPPORT_EMAIL)}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
+                    title="Open email client"
+                  >
+                    <Mail size={14} className="text-primary-600 dark:text-primary-400" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Feedback Email Card */}
-        <div className="bg-card border border-default rounded-xl p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center shrink-0">
-                <MessageSquare size={18} className="text-teal-600 dark:text-teal-400" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-sm font-semibold text-primary mb-1">
-                  Share Feedback & Ideas
-                </h4>
-                <p className="text-xs text-muted mb-2">
-                  Help us make Chronovah better
-                </p>
-                <p className="text-sm font-mono text-teal-600 dark:text-teal-400">
-                  {FEEDBACK_EMAIL}
-                </p>
-              </div>
+        <div className="bg-card border border-default rounded-xl p-4 overflow-hidden">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-teal-500/10 flex items-center justify-center shrink-0 mt-0.5">
+              <MessageSquare size={16} className="text-teal-600 dark:text-teal-400" />
             </div>
-            <div className="flex gap-2 shrink-0">
-              <button
-                onClick={() => handleCopyEmail(FEEDBACK_EMAIL)}
-                className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
-                title="Copy email"
-              >
-                {copiedEmail === FEEDBACK_EMAIL ? (
-                  <CheckCircle size={16} className="text-accent-green" />
-                ) : (
-                  <Copy size={16} className="text-muted" />
-                )}
-              </button>
-              <button
-                onClick={() => handleOpenMailClient(FEEDBACK_EMAIL)}
-                className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
-                title="Open email client"
-              >
-                <Mail size={16} className="text-teal-600 dark:text-teal-400" />
-              </button>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <h4 className="text-sm font-semibold text-primary mb-0.5">
+                    Share Feedback & Ideas
+                  </h4>
+                  <p className="text-xs text-muted mb-1.5">
+                    Help us make Chronovah better
+                  </p>
+                  <p className="text-xs font-mono text-teal-600 dark:text-teal-400 break-all">
+                    {FEEDBACK_EMAIL}
+                  </p>
+                </div>
+                <div className="flex gap-1.5 shrink-0">
+                  <button
+                    onClick={() => handleCopyEmail(FEEDBACK_EMAIL)}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
+                    title="Copy email"
+                  >
+                    {copiedEmail === FEEDBACK_EMAIL ? (
+                      <CheckCircle size={14} className="text-accent-green" />
+                    ) : (
+                      <Copy size={14} className="text-muted" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => handleOpenMailClient(FEEDBACK_EMAIL)}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
+                    title="Open email client"
+                  >
+                    <Mail size={14} className="text-teal-600 dark:text-teal-400" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
