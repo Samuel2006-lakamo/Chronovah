@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/((?!api|_next|.*\\..*).*)", "destination": "/index.html" }
+    { "source": "/((?!api|_next|_vercel|.*\\..*).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

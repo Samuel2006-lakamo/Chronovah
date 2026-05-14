@@ -58,7 +58,7 @@ export function createDataHook<T extends BaseRecord>(
 
       const record: T = {
         ...data,
-        id: data.id ?? newId(),   // honour pre-generated ID from editor
+        id: (data.id && data.id.trim().length) ? data.id : newId(),   // honour non-empty pre-generated ID from editor
         userId: user.id,
         createdAt: now(),
         updatedAt: now(),

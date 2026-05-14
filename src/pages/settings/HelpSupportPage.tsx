@@ -100,6 +100,7 @@ const responseData = response.statusText;
                     onClick={() => handleCopyEmail(SUPPORT_EMAIL)}
                     className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
                     title="Copy email"
+                    aria-label="Copy support email"
                   >
                     {copiedEmail === SUPPORT_EMAIL ? (
                       <CheckCircle size={14} className="text-accent-green" />
@@ -111,6 +112,7 @@ const responseData = response.statusText;
                     onClick={() => handleOpenMailClient(SUPPORT_EMAIL)}
                     className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
                     title="Open email client"
+                    aria-label="Open support email in mail client"
                   >
                     <Mail size={14} className="text-primary-600 dark:text-primary-400" />
                   </button>
@@ -144,6 +146,7 @@ const responseData = response.statusText;
                     onClick={() => handleCopyEmail(FEEDBACK_EMAIL)}
                     className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
                     title="Copy email"
+                    aria-label="Copy feedback email"
                   >
                     {copiedEmail === FEEDBACK_EMAIL ? (
                       <CheckCircle size={14} className="text-accent-green" />
@@ -155,6 +158,7 @@ const responseData = response.statusText;
                     onClick={() => handleOpenMailClient(FEEDBACK_EMAIL)}
                     className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-default hover:bg-slate-100 border border-default transition-colors dark:hover:bg-slate-700"
                     title="Open email client"
+                    aria-label="Open feedback email in mail client"
                   >
                     <Mail size={14} className="text-teal-600 dark:text-teal-400" />
                   </button>

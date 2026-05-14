@@ -91,7 +91,9 @@ export function useImageManager(
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<ImageErrorCode | null>(null);
-  const [isOffline, setIsOffline] = useState(false); // start optimistic — only go offline when event fires
+  const [isOffline, setIsOffline] = useState(
+    typeof navigator !== "undefined" ? !navigator.onLine : false
+  );
 
   // Track image IDs uploaded in this editor session for cancel cleanup
   const sessionImageIds = useRef<Set<string>>(new Set());
@@ -383,10 +385,12 @@ export function useImageManager(
     [
       recordId,
       recordType,
+      isOffline,
       isAtPerRecordLimit,
       isAtGlobalLimit,
       perRecordCount,
       perRecordLimit,
+      globalLimit,
       refresh,
     ]
   );

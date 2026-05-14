@@ -79,8 +79,11 @@ export default function ContactPage() {
       });
       setSubmitted(true);
     } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string; error?: string } }; message?: string };
       const msg =
-        (err as { message?: string })?.message ||
+        axiosErr?.response?.data?.message ||
+        axiosErr?.response?.data?.error ||
+        axiosErr?.message ||
         "Something went wrong. Please try again or email us directly.";
       setApiError(msg);
     } finally {

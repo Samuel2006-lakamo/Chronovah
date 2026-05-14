@@ -37,7 +37,7 @@ export default function InstallPromptBanner() {
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-3">
                 {/* App icon */}
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary-600">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-600">
                   <span className="text-lg font-bold text-white">C</span>
                 </div>
                 <div>
@@ -51,7 +51,7 @@ export default function InstallPromptBanner() {
               </div>
               <button
                 onClick={dismiss}
-                className="flex-shrink-0 p-1 rounded-lg text-muted hover:text-primary hover:bg-default transition-colors"
+                className="shrink-0 p-1 rounded-lg text-muted hover:text-primary hover:bg-default transition-colors"
                 aria-label="Dismiss install prompt"
               >
                 <X size={16} />
@@ -63,24 +63,24 @@ export default function InstallPromptBanner() {
               <div className="space-y-2 mb-3">
                 <p className="text-xs text-muted font-medium">To install on iPhone / iPad:</p>
                 <div className="flex items-center gap-2 text-xs text-muted">
-                  <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary-500/10">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-500/10">
                     <span className="text-[10px] font-bold text-primary-500">1</span>
                   </div>
                   <span>Tap the</span>
-                  <Share size={13} className="text-primary-500 flex-shrink-0" />
+                  <Share size={13} className="text-primary-500 shrink-0" />
                   <span className="font-medium text-primary">Share</span>
                   <span>button in Safari</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted">
-                  <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary-500/10">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-500/10">
                     <span className="text-[10px] font-bold text-primary-500">2</span>
                   </div>
                   <span>Scroll down and tap</span>
-                  <Plus size={13} className="text-primary-500 flex-shrink-0" />
+                  <Plus size={13} className="text-primary-500 shrink-0" />
                   <span className="font-medium text-primary">Add to Home Screen</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted">
-                  <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary-500/10">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-500/10">
                     <span className="text-[10px] font-bold text-primary-500">3</span>
                   </div>
                   <span>Tap</span>
