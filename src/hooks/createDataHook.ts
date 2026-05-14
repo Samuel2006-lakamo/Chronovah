@@ -53,7 +53,7 @@ export function createDataHook<T extends BaseRecord>(
      * can be uploaded before the record is saved), that ID is used as-is.
      * Otherwise a new UUID is generated here.
      */
-    const create = async (data: Omit<T, 'userId' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<T> => {
+    const create = async (data: Omit<T, 'id' | 'userId' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<T> => {
       if (!user?.id) throw new Error('User not authenticated');
 
       const record: T = {
