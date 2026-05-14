@@ -19,12 +19,19 @@ initializeSurface();
 
 const updateSW = registerSW({
   onNeedRefresh() {
-    if (confirm("New content available. Reload?")) {
+    // A new version of the app is available — ask the user to update
+    if (confirm("A new version of Chronovah is available. Reload to update?")) {
       updateSW(true);
     }
   },
   onOfflineReady() {
-    console.log("App ready to work offline 🚀");
+    console.log("[PWA] App is ready to work offline");
+  },
+  onRegistered(registration: ServiceWorkerRegistration | undefined) {
+    console.log("[PWA] Service worker registered:", registration);
+  },
+  onRegisterError(error: unknown) {
+    console.error("[PWA] Service worker registration failed:", error);
   },
 });
 

@@ -2,9 +2,10 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Mail, MessageSquare, Clock, ArrowRight, CheckCircle } from "lucide-react";
+import { Mail, MessageSquare, Clock, ArrowRight, CheckCircle, AlertCircle } from "lucide-react";
 import { useSEO } from "../hooks/useSEO";
 import { SUPPORT_EMAIL, FEEDBACK_EMAIL } from "../lib/constants";
+import { publicAxios } from "../../axios";
 
 const TOPICS = [
   "General question",
@@ -53,6 +54,7 @@ export default function ContactPage() {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   useSEO({
     title: "Contact — Get Help with Your Personal Workspace App",
@@ -67,10 +69,26 @@ export default function ContactPage() {
     e.preventDefault();
     if (!isValid) return;
     setLoading(true);
-    // Simulate a short delay — replace with a real API call when ready
-    await new Promise((r) => setTimeout(r, 900));
-    setLoading(false);
-    setSubmitted(true);
+    setApiError(null);
+    try {
+      await publicAxios.post("/support/contact", {
+        subject: topic,   // topic maps to subject
+        message,
+        name: name.trim(),
+        email: email.trim(),
+      });
+      setSubmitted(true);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string; error?: string } }; message?: string };
+      const msg =
+        axiosErr?.response?.data?.message ||
+        axiosErr?.response?.data?.error ||
+        axiosErr?.message ||
+        "Something went wrong. Please try again or email us directly.";
+      setApiError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -104,22 +122,22 @@ export default function ContactPage() {
                 <motion.div
                   key={title}
                   {...fadeUp(i * 0.08)}
-                  className="rounded-2xl border border-default bg-default p-6"
+                  className="rounded-2xl border border-default bg-default p-5 sm:p-6 min-w-0 overflow-hidden"
                 >
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500/10">
-                    <Icon size={18} className="text-primary-500" />
+                  <div className="mb-4 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary-500/10">
+                    <Icon size={16} className="text-primary-500" />
                   </div>
-                  <h3 className="mb-1 font-semibold text-primary">{title}</h3>
-                  <p className="mb-3 text-sm leading-relaxed text-muted">{desc}</p>
+                  <h3 className="mb-1 font-semibold text-primary text-sm sm:text-base">{title}</h3>
+                  <p className="mb-3 text-xs sm:text-sm leading-relaxed text-muted">{desc}</p>
                   {href ? (
                     <a
                       href={href}
-                      className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                      className="text-xs sm:text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 break-all block"
                     >
                       {value}
                     </a>
                   ) : (
-                    <span className="text-sm font-medium text-primary">{value}</span>
+                    <span className="text-xs sm:text-sm font-medium text-primary break-words block">{value}</span>
                   )}
                 </motion.div>
               ))}
@@ -152,6 +170,7 @@ export default function ContactPage() {
                     setEmail("");
                     setMessage("");
                     setTopic(TOPICS[0]);
+                    setApiError(null);
                   }}
                   className="mt-6 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400"
                 >
@@ -230,6 +249,14 @@ export default function ContactPage() {
                       {message.length} / 1000
                     </p>
                   </div>
+
+                  {/* API error */}
+                  {apiError && (
+                    <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/8 px-4 py-3">
+                      <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-500" />
+                      <p className="text-sm text-red-600 dark:text-red-400">{apiError}</p>
+                    </div>
+                  )}
 
                   {/* Submit */}
                   <button

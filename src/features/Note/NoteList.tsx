@@ -156,7 +156,7 @@ export default function Notes() {
         content: "",
         isPinned: false,
         isFavorite: false,
-        tags: [],
+        tags: [] as string[],
         wordCount: 0,
         readTime: 0,
       });

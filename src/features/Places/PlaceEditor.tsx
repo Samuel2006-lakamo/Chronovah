@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import ImageUpload, { type ImageUploadHandle } from "../../components/ImageUpload";
 import type { Place, PlaceType } from "../../type/PlaceType";
+import { newId } from "../../lib/helpers";
 
 interface PlaceEditorProps {
   place: Partial<Place> | null;
@@ -66,6 +67,9 @@ export default function PlaceEditor({
   const [tagInput, setTagInput] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  // Pre-generate the record ID so images can be uploaded before the record is saved.
+  const [recordId] = useState<string>(() => place?.id ?? newId());
+
   const nameRef = useRef<HTMLInputElement>(null);
   const imageUploadRef = useRef<ImageUploadHandle>(null);
 
@@ -96,6 +100,7 @@ export default function PlaceEditor({
 
   const handleSubmit = () => {
     onSave({
+      id: recordId,
       name,
       country,
       location,
@@ -229,18 +234,12 @@ export default function PlaceEditor({
                 <ImageIcon size={14} />
                 Photos
               </label>
-              {place?.id ? (
-                <ImageUpload
-                  ref={imageUploadRef}
-                  recordId={place.id}
-                  recordType="place"
-                  onImagesChange={setImages}
-                />
-              ) : (
-                <p className="text-xs text-muted py-2">
-                  Save the place first to add photos.
-                </p>
-              )}
+              <ImageUpload
+                ref={imageUploadRef}
+                recordId={recordId}
+                recordType="place"
+                onImagesChange={setImages}
+              />
             </div>
 
             {/* Notes */}

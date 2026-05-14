@@ -9,6 +9,7 @@ import PersonDetail from "./features/people/PersonDetail";
 import PlanGuard from "./components/subscription/PlanGuard";
 import Spinner from "./ui/Spinner";
 import { initializeFont } from "./lib/font";
+import InstallPromptBanner from "./components/InstallPromptBanner";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Note = lazy(() => import("./pages/Note"));
@@ -141,6 +142,8 @@ function App() {
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Suspense>
+      {/* PWA install prompt — shown to first-time visitors on supported browsers */}
+      <InstallPromptBanner />
     </BrowserRouter>
   );
 }

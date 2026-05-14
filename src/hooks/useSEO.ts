@@ -5,7 +5,7 @@ interface SEOOptions {
   description: string;
   /** Canonical path, e.g. "/pricing". Defaults to current pathname. */
   canonical?: string;
-  /** OG image URL. Defaults to /og-image.png */
+  /** OG image URL. Defaults to /og-image.jpeg */
   image?: string;
   /** "website" | "article" — defaults to "website" */
   type?: string;
@@ -13,7 +13,7 @@ interface SEOOptions {
 
 const SITE_NAME = "Chronovah";
 const BASE_URL = "https://www.chronovah.xyz";
-const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
+const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpeg`;
 
 function setMeta(name: string, content: string, attr: "name" | "property" = "name") {
   let el = document.querySelector<HTMLMetaElement>(`meta[${attr}="${name}"]`);

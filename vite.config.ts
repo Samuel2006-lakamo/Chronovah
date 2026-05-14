@@ -6,42 +6,70 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate", // auto updates service worker
-      includeAssets: ["favicon.ico", "robots.txt", "sitemap.xml", "apple-touch-icon.png", "og-image.png"],
-      manifest: {
-        name: "Chronovah",
-        short_name: "Chronovah",
-        description: "All your life details in one place",
-        start_url: "/",
-        display: "standalone",
-        background_color: "#000000",
-        theme_color: "#2b6cb0",
-        icons: [
+      // "prompt" mode: we handle the update UI ourselves (see useInstallPrompt hook)
+      registerType: "prompt",
+      // Include all static assets the service worker should pre-cache
+      includeAssets: [
+        "favicon.ico",
+        "favicon-32x32.png",
+        "favicon-16x16.png",
+        "apple-touch-icon.png",
+        "android-chrome-192x192.png",
+        "android-chrome-512x512.png",
+        "og-image.jpeg",
+        "robots.txt",
+        "sitemap.xml",
+      ],
+      // Point to the manifest in /public — don't duplicate it here
+      manifest: false,
+      workbox: {
+        // Cache the shell (index.html) with a network-first strategy so Safari
+        // always gets the latest version and never serves a stale 404 shell
+        navigateFallback: "/index.html",
+        navigateFallbackDenylist: [
+          // Don't intercept actual API calls or Vercel system paths
+          /^\/api\//,
+          /^\/_vercel\//,
+        ],
+        // Runtime caching rules
+        runtimeCaching: [
           {
-            src: "/android-chrome-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "maskable",
+            // Cache Google Fonts stylesheets
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts-cache",
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
           },
           {
-            src: "/android-chrome-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
+            // Cache Google Fonts files
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "gstatic-fonts-cache",
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
           },
           {
-            src: "/favicon-32x32.png",
-            sizes: "32x32",
-            type: "image/png",
-            purpose: "any",
+            // Cache Cloudinary images
+            urlPattern: /^https:\/\/res\.cloudinary\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "cloudinary-images-cache",
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
           },
         ],
       },
     }),
   ],
   server: {
-     host: true,
-    allowedHosts: ['chronovah.outray.app'],
+    host: true,
+    allowedHosts: ["chronovah.outray.app"],
     proxy: {
       "/api": {
         target: "https://x52bljmr-3000.uks1.devtunnels.ms/",
