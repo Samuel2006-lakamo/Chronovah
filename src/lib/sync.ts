@@ -98,30 +98,43 @@ class SyncManager {
 
   // ─── Pull a single table from server into Dexie ─────────────────────────────
 
+  /**
+   * Reconcile a single table with the server.
+   *
+   * Strategy (offline-first, safe for all states):
+   *   1. Fetch server records.
+   *   2. Upsert them into Dexie (bulkPut) — updates existing, inserts new.
+   *   3. Delete local records that are no longer on the server, BUT only if
+   *      they are not sitting in the pending-create queue (i.e. they are not
+   *      records the user just created offline that haven't reached the server
+   *      yet). This handles server-side deletes from other devices.
+   *   4. Never re-insert records the user has already deleted locally
+   *      (pendingDeleteIds filter on the server payload).
+   *
+   * This is the standard CRDTs-lite / "last-write-wins with local protection"
+   * pattern used by offline-first apps (Google Docs offline, Notion, Linear).
+   */
   async pullTable(userId: string, table: SyncTable): Promise<void> {
     if (!this.isOnline) return;
     try {
-      // Fetch all pending operations for this table from the sync queue.
-      // Note: syncQueue only has individual indexes (no compound index), so we
-      // filter on the indexed `userId` field first, then narrow in JS.
-      const pendingOpsForTable = await db.syncQueue
+      // Read the pending queue for this table once — used for both protections.
+      const pendingOps = await db.syncQueue
         .where('userId').equals(userId)
         .filter((op) => op.table === table)
         .toArray();
 
-      // Records the user created locally but haven't reached the server yet —
-      // must not be deleted from Dexie during a pull.
+      // IDs the user created locally but haven't reached the server yet.
+      // These must NEVER be deleted from Dexie during a pull.
       const pendingCreateIds = new Set(
-        pendingOpsForTable
+        pendingOps
           .filter((op) => op.operation === 'create')
           .map((op) => op.recordId)
       );
-      const hasPendingCreates = pendingCreateIds.size > 0;
 
-      // Records the user deleted locally but the delete hasn't reached the
-      // server yet — must not be re-inserted from the server payload.
+      // IDs the user deleted locally but the delete hasn't reached the server.
+      // Must NOT be re-inserted from the server payload.
       const pendingDeleteIds = new Set(
-        pendingOpsForTable
+        pendingOps
           .filter((op) => op.operation === 'delete')
           .map((op) => op.recordId)
       );
@@ -129,65 +142,49 @@ class SyncManager {
       switch (table) {
         case 'notes': {
           const { data } = await protectedAxios.get<Note[]>('/notes');
-          // Filter out records the user has already deleted locally
-          const serverRecords = data?.filter((r) => !pendingDeleteIds.has(r.id)) ?? [];
-          if (hasPendingCreates) {
-            // Merge path: preserve locally-created notes not yet on the server
-            await db.notes
-              .where('userId').equals(userId)
-              .filter((record) => !pendingCreateIds.has(record.id))
-              .delete();
-            if (serverRecords.length) await db.notes.bulkPut(serverRecords);
-          } else {
-            // Fast path: no pending creates — safe to replace entirely
-            await db.notes.where('userId').equals(userId).delete();
-            if (serverRecords.length) await db.notes.bulkAdd(serverRecords);
-          }
+          const serverRecords = (data ?? []).filter((r) => !pendingDeleteIds.has(r.id));
+          const serverIds = new Set(serverRecords.map((r) => r.id));
+          // 1. Upsert server records into Dexie
+          if (serverRecords.length) await db.notes.bulkPut(serverRecords);
+          // 2. Remove local records deleted on the server (from another device),
+          //    but protect records that are pending a create (not yet on server).
+          await db.notes
+            .where('userId').equals(userId)
+            .filter((r) => !serverIds.has(r.id) && !pendingCreateIds.has(r.id))
+            .delete();
           break;
         }
         case 'journal': {
           const { data } = await protectedAxios.get<JournalEntry[]>('/journal');
-          const serverRecords = data?.filter((r) => !pendingDeleteIds.has(r.id)) ?? [];
-          if (hasPendingCreates) {
-            await db.journal
-              .where('userId').equals(userId)
-              .filter((record) => !pendingCreateIds.has(record.id))
-              .delete();
-            if (serverRecords.length) await db.journal.bulkPut(serverRecords);
-          } else {
-            await db.journal.where('userId').equals(userId).delete();
-            if (serverRecords.length) await db.journal.bulkAdd(serverRecords);
-          }
+          const serverRecords = (data ?? []).filter((r) => !pendingDeleteIds.has(r.id));
+          const serverIds = new Set(serverRecords.map((r) => r.id));
+          if (serverRecords.length) await db.journal.bulkPut(serverRecords);
+          await db.journal
+            .where('userId').equals(userId)
+            .filter((r) => !serverIds.has(r.id) && !pendingCreateIds.has(r.id))
+            .delete();
           break;
         }
         case 'people': {
           const { data } = await protectedAxios.get<Person[]>('/people');
-          const serverRecords = data?.filter((r) => !pendingDeleteIds.has(r.id)) ?? [];
-          if (hasPendingCreates) {
-            await db.people
-              .where('userId').equals(userId)
-              .filter((record) => !pendingCreateIds.has(record.id))
-              .delete();
-            if (serverRecords.length) await db.people.bulkPut(serverRecords);
-          } else {
-            await db.people.where('userId').equals(userId).delete();
-            if (serverRecords.length) await db.people.bulkAdd(serverRecords);
-          }
+          const serverRecords = (data ?? []).filter((r) => !pendingDeleteIds.has(r.id));
+          const serverIds = new Set(serverRecords.map((r) => r.id));
+          if (serverRecords.length) await db.people.bulkPut(serverRecords);
+          await db.people
+            .where('userId').equals(userId)
+            .filter((r) => !serverIds.has(r.id) && !pendingCreateIds.has(r.id))
+            .delete();
           break;
         }
         case 'places': {
           const { data } = await protectedAxios.get<Place[]>('/places');
-          const serverRecords = data?.filter((r) => !pendingDeleteIds.has(r.id)) ?? [];
-          if (hasPendingCreates) {
-            await db.places
-              .where('userId').equals(userId)
-              .filter((record) => !pendingCreateIds.has(record.id))
-              .delete();
-            if (serverRecords.length) await db.places.bulkPut(serverRecords);
-          } else {
-            await db.places.where('userId').equals(userId).delete();
-            if (serverRecords.length) await db.places.bulkAdd(serverRecords);
-          }
+          const serverRecords = (data ?? []).filter((r) => !pendingDeleteIds.has(r.id));
+          const serverIds = new Set(serverRecords.map((r) => r.id));
+          if (serverRecords.length) await db.places.bulkPut(serverRecords);
+          await db.places
+            .where('userId').equals(userId)
+            .filter((r) => !serverIds.has(r.id) && !pendingCreateIds.has(r.id))
+            .delete();
           break;
         }
       }

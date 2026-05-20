@@ -17,18 +17,17 @@ import {
   Share2,
   Copy,
   ExternalLink,
- 
-  ChevronLeft,
-  ChevronRight,
-  X,
   Tag,
   Navigation,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../../database/db";
 import PlaceEditor from "./PlaceEditor";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import ImageLightbox from "../../components/ImageLightbox";
 import { useToast } from "../../hooks/useToast";
 import type { Place } from "../../type/PlaceType";
 
@@ -65,9 +64,8 @@ export default function PlaceDetail() {
 
   const [showEditor, setShowEditor] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
-    null,
-  );
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [heroImgError, setHeroImgError] = useState(false);
@@ -147,12 +145,12 @@ export default function PlaceDetail() {
         {place.images && place.images.length > 0 && !heroImgError ? (
           <>
             <img
-              src={place.images[selectedImageIndex ?? 0]}
+              src={place.images[selectedImageIndex]}
               alt={place.name}
               className="w-full h-full object-cover"
               onError={() => {
                 setHeroImgError(true);
-                console.error(`Failed to load image for place: ${place.name}`, place.images[selectedImageIndex ?? 0]);
+                console.error(`Failed to load image for place: ${place.name}`, place.images[selectedImageIndex]);
               }}
             />
             {/* Image Gallery Overlay */}
@@ -164,10 +162,7 @@ export default function PlaceDetail() {
                 <button
                   onClick={() =>
                     setSelectedImageIndex((prev) =>
-                      prev === null
-                        ? 1
-                        : (prev - 1 + place.images.length) %
-                          place.images.length,
+                      (prev - 1 + place.images.length) % place.images.length
                     )
                   }
                   className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
@@ -177,7 +172,7 @@ export default function PlaceDetail() {
                 <button
                   onClick={() =>
                     setSelectedImageIndex((prev) =>
-                      prev === null ? 1 : (prev + 1) % place.images.length,
+                      (prev + 1) % place.images.length
                     )
                   }
                   className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
@@ -192,7 +187,7 @@ export default function PlaceDetail() {
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
                       className={`w-2 h-2 rounded-full transition-all ${
-                        (selectedImageIndex ?? 0) === index
+                        selectedImageIndex === index
                           ? "w-6 bg-white"
                           : "bg-white/50 hover:bg-white/80"
                       }`}
@@ -380,14 +375,14 @@ export default function PlaceDetail() {
                   {place.images.slice(1).map((img, index) => (
                     <button
                       key={index}
-                      onClick={() => setSelectedImageIndex(index + 1)}
+                      onClick={() => setLightboxIndex(index + 1)}
                       className="aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
                     >
                       <GalleryImage
                         src={img}
                         alt={`${place.name} ${index + 2}`}
                         className="w-full h-full object-cover"
-                        onClick={() => setSelectedImageIndex(index + 1)}
+                        onClick={() => setLightboxIndex(index + 1)}
                       />
                     </button>
                   ))}
@@ -492,64 +487,14 @@ export default function PlaceDetail() {
         </div>
       </div>
 
-      {/* Image Fullscreen Modal */}
-      <AnimatePresence>
-        {selectedImageIndex !== null && place.images && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
-            onClick={() => setSelectedImageIndex(null)}
-          >
-            <button
-              onClick={() => setSelectedImageIndex(null)}
-              className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
-            >
-              <X size={24} />
-            </button>
-
-            {place.images.length > 1 && (
-              <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedImageIndex(
-                      (prev) =>
-                        (prev! - 1 + place.images.length) % place.images.length,
-                    );
-                  }}
-                  className="absolute left-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
-                >
-                  <ChevronLeft size={24} />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedImageIndex(
-                      (prev) => (prev! + 1) % place.images.length,
-                    );
-                  }}
-                  className="absolute right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
-                >
-                  <ChevronRight size={24} />
-                </button>
-              </>
-            )}
-
-            <img
-              src={place.images[selectedImageIndex]}
-              alt={`${place.name} ${selectedImageIndex + 1}`}
-              className="max-w-[90vw] max-h-[90vh] object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
-
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
-              {selectedImageIndex + 1} / {place.images.length}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Image Lightbox */}
+      <ImageLightbox
+        images={place.images ?? []}
+        index={lightboxIndex}
+        alt={place.name}
+        onClose={() => setLightboxIndex(null)}
+        onNavigate={setLightboxIndex}
+      />
 
       {/* Edit Modal */}
       <AnimatePresence>

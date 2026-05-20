@@ -74,7 +74,7 @@ export default function ImageGallery({
               />
 
               {/* Hover overlay */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-1.5">
+              <div className="absolute inset-0 z-10 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-1.5">
                 {/* Preview */}
                 <button
                   onClick={() => setPreviewImage(img.secureUrl)}
@@ -114,7 +114,7 @@ export default function ImageGallery({
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="absolute inset-0 bg-black/80 rounded-lg flex flex-col items-center justify-center gap-2 p-2"
+                  className="absolute inset-0 z-20 bg-black/80 rounded-lg flex flex-col items-center justify-center gap-2 p-2"
                 >
                   <AlertTriangle size={16} className="text-yellow-400" />
                   <p className="text-white text-xs text-center leading-tight">
