@@ -23,6 +23,7 @@ import type { JournalEntry } from "../../type/JournalType";
 import JournalEditor from "./JournalEditor";
 import MarkdownContent from "../../components/MarkdownContent";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import ImageLightbox from "../../components/ImageLightbox";
 import { useToast } from "../../hooks/useToast";
 
 const moods: Record<string, { emoji: string; color: string; bgColor: string }> =
@@ -48,6 +49,7 @@ export default function JournalDetail() {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const entry = useLiveQuery(() => (entryId ? db.journal.get(entryId) : undefined), [entryId]);
 
@@ -213,12 +215,19 @@ export default function JournalDetail() {
                 </h2>
                 <div className="grid grid-cols-3 gap-3">
                   {entry.images.map((img, index) => (
-                    <img
+                    <button
                       key={index}
-                      src={img}
-                      alt={`Journal ${index + 1}`}
-                      className="aspect-square object-cover rounded-lg"
-                    />
+                      onClick={() => setLightboxIndex(index)}
+                      className="aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                      aria-label={`View photo ${index + 1}`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Journal photo ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </button>
                   ))}
                 </div>
               </div>
@@ -318,6 +327,15 @@ export default function JournalDetail() {
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteConfirm(false)}
         isLoading={isDeleting}
+      />
+
+      {/* Image Lightbox */}
+      <ImageLightbox
+        images={entry.images ?? []}
+        index={lightboxIndex}
+        alt="Journal photo"
+        onClose={() => setLightboxIndex(null)}
+        onNavigate={setLightboxIndex}
       />
     </div>
   );

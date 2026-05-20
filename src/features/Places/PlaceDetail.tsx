@@ -17,10 +17,6 @@ import {
   Share2,
   Copy,
   ExternalLink,
- 
-  ChevronLeft,
-  ChevronRight,
-  X,
   Tag,
   Navigation,
   AlertCircle,
@@ -29,6 +25,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../../database/db";
 import PlaceEditor from "./PlaceEditor";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import ImageLightbox from "../../components/ImageLightbox";
 import { useToast } from "../../hooks/useToast";
 import type { Place } from "../../type/PlaceType";
 
@@ -492,64 +489,14 @@ export default function PlaceDetail() {
         </div>
       </div>
 
-      {/* Image Fullscreen Modal */}
-      <AnimatePresence>
-        {selectedImageIndex !== null && place.images && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
-            onClick={() => setSelectedImageIndex(null)}
-          >
-            <button
-              onClick={() => setSelectedImageIndex(null)}
-              className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
-            >
-              <X size={24} />
-            </button>
-
-            {place.images.length > 1 && (
-              <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedImageIndex(
-                      (prev) =>
-                        (prev! - 1 + place.images.length) % place.images.length,
-                    );
-                  }}
-                  className="absolute left-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
-                >
-                  <ChevronLeft size={24} />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedImageIndex(
-                      (prev) => (prev! + 1) % place.images.length,
-                    );
-                  }}
-                  className="absolute right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
-                >
-                  <ChevronRight size={24} />
-                </button>
-              </>
-            )}
-
-            <img
-              src={place.images[selectedImageIndex]}
-              alt={`${place.name} ${selectedImageIndex + 1}`}
-              className="max-w-[90vw] max-h-[90vh] object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
-
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
-              {selectedImageIndex + 1} / {place.images.length}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Image Lightbox */}
+      <ImageLightbox
+        images={place.images ?? []}
+        index={selectedImageIndex}
+        alt={place.name}
+        onClose={() => setSelectedImageIndex(null)}
+        onNavigate={setSelectedImageIndex}
+      />
 
       {/* Edit Modal */}
       <AnimatePresence>

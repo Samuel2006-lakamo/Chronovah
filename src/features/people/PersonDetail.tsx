@@ -1,4 +1,3 @@
-// pages/People/PersonDetail.tsx
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
@@ -9,14 +8,12 @@ import {
   Trash2,
   Mail,
   Phone,
-  
   Briefcase,
   MapPin,
   Globe,
   Twitter,
   Instagram,
   Linkedin,
-  
   Share2,
   User,
   Cake,
@@ -31,6 +28,7 @@ import { db } from "../../database/db";
 import type { Person } from "../../type/PeopleType";
 import PersonEditor from "./PersonEditor";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import ImageLightbox from "../../components/ImageLightbox";
 import { useToast } from "../../hooks/useToast";
 
 // Small helper so each gallery thumbnail has its own error state
@@ -69,9 +67,7 @@ export default function PersonDetail() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [avatarImgError, setAvatarImgError] = useState(false);
-//   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
-//     null,
-//   );
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const person = useLiveQuery(() => (personId ? db.people.get(personId) : undefined), [personId]);
 
@@ -204,18 +200,20 @@ export default function PersonDetail() {
             {(() => {
               // Prefer images[] array first, fall back to legacy image field
               const primaryImage = person.images?.[0] ?? person.image;
-              console.log('Person image data:', person.image, person.images);
               if (primaryImage && !avatarImgError) {
                 return (
-                  <img
-                    src={primaryImage}
-                    alt={person.name}
-                    className="w-24 h-24 rounded-full object-cover border-4 border-card shadow-lg"
-                    onError={() => {
-                      setAvatarImgError(true);
-                      console.error(`Failed to load image for person: ${person.name}`, primaryImage);
-                    }}
-                  />
+                  <button
+                    onClick={() => setLightboxIndex(0)}
+                    className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-full"
+                    aria-label="View profile photo"
+                  >
+                    <img
+                      src={primaryImage}
+                      alt={person.name}
+                      className="w-24 h-24 rounded-full object-cover border-4 border-card shadow-lg hover:opacity-90 transition-opacity cursor-pointer"
+                      onError={() => setAvatarImgError(true)}
+                    />
+                  </button>
                 );
               }
               if (primaryImage && avatarImgError) {
@@ -450,12 +448,18 @@ export default function PersonDetail() {
               </h2>
               <div className="grid grid-cols-4 gap-2">
                 {person.images.slice(1).map((img: string, index: number) => (
-                  <GalleryImage
+                  <button
                     key={index}
-                    src={img}
-                    alt={`${person.name} ${index + 2}`}
-                    className="aspect-square object-cover rounded-lg"
-                  />
+                    onClick={() => setLightboxIndex(index + 1)}
+                    className="aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                    aria-label={`View photo ${index + 2}`}
+                  >
+                    <GalleryImage
+                      src={img}
+                      alt={`${person.name} ${index + 2}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
                 ))}
               </div>
             </div>
@@ -490,6 +494,15 @@ export default function PersonDetail() {
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteConfirm(false)}
         isLoading={isDeleting}
+      />
+
+      {/* Image Lightbox */}
+      <ImageLightbox
+        images={person.images ?? []}
+        index={lightboxIndex}
+        alt={person.name}
+        onClose={() => setLightboxIndex(null)}
+        onNavigate={setLightboxIndex}
       />
     </div>
   );
