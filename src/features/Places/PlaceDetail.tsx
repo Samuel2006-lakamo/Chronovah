@@ -20,6 +20,8 @@ import {
   Tag,
   Navigation,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../../database/db";
