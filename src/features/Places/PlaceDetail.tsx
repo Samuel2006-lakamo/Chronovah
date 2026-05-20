@@ -64,9 +64,8 @@ export default function PlaceDetail() {
 
   const [showEditor, setShowEditor] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
-    null,
-  );
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [heroImgError, setHeroImgError] = useState(false);
@@ -146,12 +145,12 @@ export default function PlaceDetail() {
         {place.images && place.images.length > 0 && !heroImgError ? (
           <>
             <img
-              src={place.images[selectedImageIndex ?? 0]}
+              src={place.images[selectedImageIndex]}
               alt={place.name}
               className="w-full h-full object-cover"
               onError={() => {
                 setHeroImgError(true);
-                console.error(`Failed to load image for place: ${place.name}`, place.images[selectedImageIndex ?? 0]);
+                console.error(`Failed to load image for place: ${place.name}`, place.images[selectedImageIndex]);
               }}
             />
             {/* Image Gallery Overlay */}
@@ -163,10 +162,7 @@ export default function PlaceDetail() {
                 <button
                   onClick={() =>
                     setSelectedImageIndex((prev) =>
-                      prev === null
-                        ? 1
-                        : (prev - 1 + place.images.length) %
-                          place.images.length,
+                      (prev - 1 + place.images.length) % place.images.length
                     )
                   }
                   className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
@@ -176,7 +172,7 @@ export default function PlaceDetail() {
                 <button
                   onClick={() =>
                     setSelectedImageIndex((prev) =>
-                      prev === null ? 1 : (prev + 1) % place.images.length,
+                      (prev + 1) % place.images.length
                     )
                   }
                   className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
@@ -191,7 +187,7 @@ export default function PlaceDetail() {
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
                       className={`w-2 h-2 rounded-full transition-all ${
-                        (selectedImageIndex ?? 0) === index
+                        selectedImageIndex === index
                           ? "w-6 bg-white"
                           : "bg-white/50 hover:bg-white/80"
                       }`}
@@ -379,14 +375,14 @@ export default function PlaceDetail() {
                   {place.images.slice(1).map((img, index) => (
                     <button
                       key={index}
-                      onClick={() => setSelectedImageIndex(index + 1)}
+                      onClick={() => setLightboxIndex(index + 1)}
                       className="aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
                     >
                       <GalleryImage
                         src={img}
                         alt={`${place.name} ${index + 2}`}
                         className="w-full h-full object-cover"
-                        onClick={() => setSelectedImageIndex(index + 1)}
+                        onClick={() => setLightboxIndex(index + 1)}
                       />
                     </button>
                   ))}
@@ -494,10 +490,10 @@ export default function PlaceDetail() {
       {/* Image Lightbox */}
       <ImageLightbox
         images={place.images ?? []}
-        index={selectedImageIndex}
+        index={lightboxIndex}
         alt={place.name}
-        onClose={() => setSelectedImageIndex(null)}
-        onNavigate={setSelectedImageIndex}
+        onClose={() => setLightboxIndex(null)}
+        onNavigate={setLightboxIndex}
       />
 
       {/* Edit Modal */}

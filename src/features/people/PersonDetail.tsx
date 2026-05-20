@@ -497,13 +497,26 @@ export default function PersonDetail() {
       />
 
       {/* Image Lightbox */}
-      <ImageLightbox
-        images={person.images ?? []}
-        index={lightboxIndex}
-        alt={person.name}
-        onClose={() => setLightboxIndex(null)}
-        onNavigate={setLightboxIndex}
-      />
+      {(() => {
+        // Build a unified image list: prefer person.images[], but for legacy
+        // records that only have person.image, synthesise a single-item array.
+        const primaryImage = person.images?.[0] ?? person.image;
+        const lightboxImages =
+          person.images && person.images.length > 0
+            ? person.images
+            : primaryImage
+            ? [primaryImage]
+            : [];
+        return (
+          <ImageLightbox
+            images={lightboxImages}
+            index={lightboxIndex}
+            alt={person.name}
+            onClose={() => setLightboxIndex(null)}
+            onNavigate={setLightboxIndex}
+          />
+        );
+      })()}
     </div>
   );
 }

@@ -35,18 +35,21 @@ export default function ImageLightbox({
 }: ImageLightboxProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const savedFocusRef = useRef<HTMLElement | null>(null);
-  const isOpen = index !== null;
+
   const total = images.length;
+  // Treat as open only when index is a valid integer within the array bounds
+  const isValidIndex = index !== null && Number.isInteger(index) && total > 0 && index >= 0 && index < total;
+  const isOpen = isValidIndex;
 
   const prev = useCallback(() => {
-    if (index === null) return;
+    if (!isValidIndex || index === null) return;
     onNavigate((index - 1 + total) % total);
-  }, [index, total, onNavigate]);
+  }, [isValidIndex, index, total, onNavigate]);
 
   const next = useCallback(() => {
-    if (index === null) return;
+    if (!isValidIndex || index === null) return;
     onNavigate((index + 1) % total);
-  }, [index, total, onNavigate]);
+  }, [isValidIndex, index, total, onNavigate]);
 
   // Keyboard navigation + focus management
   useEffect(() => {
@@ -70,7 +73,7 @@ export default function ImageLightbox({
 
   return (
     <AnimatePresence>
-      {isOpen && index !== null && (
+      {isOpen && isValidIndex && index !== null && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
